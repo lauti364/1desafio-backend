@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Nuevo Producto</title>
+</head>
+<body>
+    <h1>Agregar Nuevo Producto</h1>
+    <form action="http://localhost:8080/products" method="POST">
+        <label for="titulo">Título:</label><br>
+        <input type="text" id="titulo" name="titulo" required><br>
+        
+        <label for="descripcion">Descripción:</label><br>
+        <textarea id="descripcion" name="descripcion" required></textarea><br>
+        
+        <label for="codigo">Código:</label><br>
+        <input type="text" id="codigo" name="codigo" required><br>
+        
+        <label for="precio">Precio:</label><br>
+        <input type="number" id="precio" name="precio" required><br>
+        
+        <label for="status">Estado:</label><br>
+        <input type="checkbox" id="status" name="status" checked><br>
+        
+        <label for="stock">Stock:</label><br>
+        <input type="number" id="stock" name="stock" required><br>
+        
+        <label for="categoria">Categoría:</label><br>
+        <input type="text" id="categoria" name="categoria" required><br>
+        
+        <label for="thumbnails">Imágenes:</label><br>
+        <input type="text" id="thumbnails" name="thumbnails" placeholder="Separadas por coma"><br>
+        
+        <button type="submit">Agregar Producto</button>
+    </form>
+</body>
+</html>
