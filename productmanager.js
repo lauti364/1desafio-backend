@@ -1,81 +1,112 @@
-const express = require('express');
+const fs = require('fs').promises;
 const path = require('path');
-const productManager = require('./productmanager');
 
-const app = express();
-const PORT = 8080;
+const productsPath = path.join(__dirname, 'productos.json');
 
-app.use(express.json());
-
-// Obtener todos los productos
-app.get('/products', async (req, res) => {
+async function getAllProducts(limit) {
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
-    const products = await productManager.getAllProducts(limit);
-    res.json(products);
+    const data = await fs.readFile(productsPath, 'utf8');
+    const products = JSON.parse(data);
+    return limit ? products.slice(0, limit) : products;
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
+    throw new Error('Error fetching products: ' + error.message);
   }
-});
+}
 
-// Obtener un producto por ID
-app.get('/products/:id', async (req, res) => {
+async function getProductById(productId) {
   try {
-    const productId = parseInt(req.params.id);
-    const product = await productManager.getProductById(productId);
-    if (product) {
-      res.json(product);
-    } else {
-      res.status(404).send('Producto no encontrado');
+    const data = await fs.readFile(productsPath, 'utf8');
+    const products = JSON.parse(data);
+    return products.find(product => product.id === productId);
+  } catch (error) {
+    throw new Error('Error fetching product by ID: ' + error.message);
+  }
+}
+
+async function addProduct(newProductData) {
+  try {
+    const data = await fs.readFile(productsPath, 'utf8');
+    const products = JSON.parse(data);
+
+    // Generar un nuevo ID
+    const newProductId = generateUniqueId(products);
+
+    // Crear el objeto del nuevo producto
+    const newProduct = {
+      id: newProductId,
+      titulo: newProductData.titulo,
+      descripcion: newProductData.descripcion,
+      codigo: newProductData.codigo,
+      precio: newProductData.precio,
+      status: newProductData.status === undefined ? true : newProductData.status,
+      stock: newProductData.stock,
+      categoria: newProductData.categoria,
+      thumbnails: newProductData.thumbnails || []
+    };
+
+    // Agregar el nuevo producto al array
+    products.push(newProduct);
+
+    // Escribir el array de productos actualizado en el archivo
+    await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
+
+    return newProduct;
+  } catch (error) {
+    throw new Error('Error adding product: ' + error.message);
+  }
+}
+
+async function updateProduct(productId, updatedProductData) {
+  try {
+    const data = await fs.readFile(productsPath, 'utf8');
+    let products = JSON.parse(data);
+
+    // Buscar el índice del producto a actualizar
+    const index = products.findIndex(product => product.id === productId);
+    if (index === -1) {
+      throw new Error('Producto no encontrado');
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
-  }
-});
 
-// Agregar un nuevo producto
-app.post('/products', async (req, res) => {
+    // Actualizar el producto con los datos proporcionados
+    products[index] = { ...products[index], ...updatedProductData };
+
+    // Escribir el array de productos actualizado en el archivo
+    await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
+
+    return products[index];
+  } catch (error) {
+    throw new Error('Error updating product: ' + error.message);
+  }
+}
+
+async function deleteProduct(productId) {
   try {
-    const newProduct = req.body;
-    const createdProduct = await productManager.addProduct(newProduct);
-    res.status(201).json(createdProduct);
+    const data = await fs.readFile(productsPath, 'utf8');
+    let products = JSON.parse(data);
+
+    // Filtrar el array de productos para excluir el producto con el ID proporcionado
+    products = products.filter(product => product.id !== productId);
+
+    // Escribir el array de productos actualizado en el archivo
+    await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
+    throw new Error('Error deleting product: ' + error.message);
   }
-});
+}
 
-// Actualizar un producto por ID
-app.put('/products/:id', async (req, res) => {
-  try {
-    const productId = parseInt(req.params.id);
-    const updatedProduct = await productManager.updateProduct(productId, req.body);
-    res.json(updatedProduct);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
+function generateUniqueId(products) {
+  // Generar un ID único
+  let newId = Math.floor(Math.random() * 1000) + 1;
+  while (products.some(product => product.id === newId)) {
+    newId = Math.floor(Math.random() * 1000) + 1;
   }
-});
+  return newId;
+}
 
-// Eliminar un producto por ID
-app.delete('/products/:id', async (req, res) => {
-  try {
-    const productId = parseInt(req.params.id);
-    await productManager.deleteProduct(productId);
-    res.status(204).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
-  }
-});
-
-// error
-app.use((req, res) => {
-  res.status(404).send('Ruta no encontrada');
-});
-
-app.listen(PORT, () => {
-  console.log(`Servidor Express escuchando en el puerto ${PORT}`);
-});
+module.exports = {
+  getAllProducts,
+  getProductById,
+  addProduct,
+  updateProduct,
+  deleteProduct
+};

@@ -6,8 +6,7 @@
     "descripcion": "Refrescante gaseosa sabor limón",
     "precio": 2.5,
     "thumbnail": "ruta/gaseosa_limón.jpg",
-    "stock": 20,
-    "price": 150
+    "stock": 20
   },
   {
     "id": 2,
@@ -16,8 +15,7 @@
     "descripcion": "Refrescante gaseosa sabor naranja",
     "precio": 2.5,
     "thumbnail": "ruta/gaseosa_limón.jpg",
-    "stock": 20,
-    "price": 150
+    "stock": 20
   },
   {
     "id": 3,
@@ -36,15 +34,6 @@
     "precio": 2.5,
     "thumbnail": "ruta/gaseosa_cola.jpg",
     "stock": 15
-  },
-  {
-    "id": 5,
-    "codigo": "5",
-    "titulo": "Infusión de té verde",
-    "descripcion": "Infusión antioxidante de té verde",
-    "precio": 3.5,
-    "thumbnail": "ruta/infusion_te_verde.jpg",
-    "stock": 30
   },
   {
     "id": 6,
@@ -92,7 +81,27 @@
     "stock": 30
   },
   {
-    "id": 489,
+    "id": 101,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 408,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 829,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 896,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 958,
     "status": true,
     "thumbnails": []
   }

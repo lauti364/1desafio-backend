@@ -1,13 +1,14 @@
 const express = require('express');
 const path = require('path');
 const productManager = require('./productmanager');
+const cartManager = require('./cartmanager');
 
 const app = express();
 const PORT = 8080;
 
 app.use(express.json());
 
-// Obtener todos los productos
+// para obtener todos los productos
 app.get('/products', async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
@@ -19,7 +20,7 @@ app.get('/products', async (req, res) => {
   }
 });
 
-// Obtener un producto por ID
+//obtener un producto por ID
 app.get('/products/:id', async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
@@ -35,7 +36,7 @@ app.get('/products/:id', async (req, res) => {
   }
 });
 
-// Agregar un nuevo producto
+// para agregar productos
 app.post('/products', async (req, res) => {
   try {
     const newProduct = req.body;
@@ -47,7 +48,7 @@ app.post('/products', async (req, res) => {
   }
 });
 
-// Actualizar un producto por ID
+// actualizar productos x id
 app.put('/products/:id', async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
@@ -59,7 +60,7 @@ app.put('/products/:id', async (req, res) => {
   }
 });
 
-// Eliminar un producto por ID
+// para eliminar productos
 app.delete('/products/:id', async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
@@ -71,7 +72,46 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
-// Manejador de rutas no encontradas
+// carts
+
+
+
+// Crear carrito
+app.post('/carts', async (req, res) => {
+  try {
+    const newCart = await cartManager.createCart();
+    res.status(201).json(newCart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+app.get('/carts/:cid', async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const cartProducts = await cartManager.getCartProducts(cartId);
+    res.json(cartProducts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+// agregar un producto a un carrito por ID de carrito y ID de producto
+app.post('/carts/:cid/product/:pid', async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+    const addedProduct = await cartManager.addProductToCart(cartId, productId);
+    res.status(201).json(addedProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+// errores
 app.use((req, res) => {
   res.status(404).send('Ruta no encontrada');
 });
