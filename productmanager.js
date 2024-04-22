@@ -28,10 +28,10 @@ async function addProduct(newProductData) {
     const data = await fs.readFile(productsPath, 'utf8');
     const products = JSON.parse(data);
 
-    // Generar un nuevo ID
+    // genera id
     const newProductId = generateUniqueId(products);
 
-    // Crear el objeto del nuevo producto
+    //hace el producto
     const newProduct = {
       id: newProductId,
       titulo: newProductData.titulo,
@@ -44,10 +44,8 @@ async function addProduct(newProductData) {
       thumbnails: newProductData.thumbnails || []
     };
 
-    // Agregar el nuevo producto al array
     products.push(newProduct);
 
-    // Escribir el array de productos actualizado en el archivo
     await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
 
     return newProduct;
@@ -61,16 +59,15 @@ async function updateProduct(productId, updatedProductData) {
     const data = await fs.readFile(productsPath, 'utf8');
     let products = JSON.parse(data);
 
-    // Buscar el índice del producto a actualizar
     const index = products.findIndex(product => product.id === productId);
     if (index === -1) {
       throw new Error('Producto no encontrado');
     }
 
-    // Actualizar el producto con los datos proporcionados
+    // Actualiza el prodcuto
     products[index] = { ...products[index], ...updatedProductData };
 
-    // Escribir el array de productos actualizado en el archivo
+    // lo actualiza en el json
     await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
 
     return products[index];
@@ -84,10 +81,10 @@ async function deleteProduct(productId) {
     const data = await fs.readFile(productsPath, 'utf8');
     let products = JSON.parse(data);
 
-    // Filtrar el array de productos para excluir el producto con el ID proporcionado
+    // excluye el producto del id selecionado osea lo borra
     products = products.filter(product => product.id !== productId);
 
-    // Escribir el array de productos actualizado en el archivo
+    // escreibe el nuevo array sin el producto borrado
     await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
   } catch (error) {
     throw new Error('Error deleting product: ' + error.message);
@@ -95,7 +92,6 @@ async function deleteProduct(productId) {
 }
 
 function generateUniqueId(products) {
-  // Generar un ID único
   let newId = Math.floor(Math.random() * 1000) + 1;
   while (products.some(product => product.id === newId)) {
     newId = Math.floor(Math.random() * 1000) + 1;

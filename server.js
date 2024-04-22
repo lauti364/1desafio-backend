@@ -72,11 +72,11 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
+
+//------------------------------------------------------------------------------
 // carts
 
-
-
-// Crear carrito
+// crea el carrito
 app.post('/carts', async (req, res) => {
   try {
     const newCart = await cartManager.createCart();
@@ -98,7 +98,7 @@ app.get('/carts/:cid', async (req, res) => {
   }
 });
 
-// agregar un producto a un carrito por ID de carrito y ID de producto
+// agrega x id de carrito y producto
 app.post('/carts/:cid/product/:pid', async (req, res) => {
   try {
     const cartId = req.params.cid;
