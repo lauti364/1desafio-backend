@@ -8,7 +8,7 @@ const PORT = 8080;
 
 app.use(express.json());
 
-// Endpoint para obtener todos los productos
+// agarra todos los productos con GET
 app.get('/products', async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
@@ -20,7 +20,7 @@ app.get('/products', async (req, res) => {
   }
 });
 
-// Endpoint para obtener un producto por ID
+// busca el producto x id
 app.get('/products/:id', async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
@@ -36,7 +36,7 @@ app.get('/products/:id', async (req, res) => {
   }
 });
 
-// Endpoint para agregar productos
+// agrega productos con POST
 app.post('/products', async (req, res) => {
   try {
     const newProduct = req.body;
@@ -48,7 +48,7 @@ app.post('/products', async (req, res) => {
   }
 });
 
-// Endpoint para actualizar productos por ID
+//actualiza los productos x el id
 app.put('/products/:id', async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
@@ -60,7 +60,7 @@ app.put('/products/:id', async (req, res) => {
   }
 });
 
-// Endpoint para eliminar productos por ID
+// elimina pproductos x el id
 app.delete('/products/:id', async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
@@ -76,14 +76,58 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
-// Manejo de errores para rutas no encontradas
+// crea un nuevo cart
+app.post('/carts', (req, res) => {
+  try {
+    const newCart = cartManager.createCart();
+    res.status(201).json(newCart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+// obtiene el cart x el id
+app.get('/carts/:cid', (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const cart = cartManager.getCartById(cartId);
+    if (cart) {
+      res.json(cart);
+    } else {
+      res.status(404).send('Carrito no encontrado');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+// agregar productos al cart
+app.post('/carts/:cid/products/:pid', (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+    const quantity = req.body.quantity || 1;
+
+    const updatedCart = cartManager.addProductToCart(cartId, productId, quantity);
+    if (updatedCart.error) {
+      res.status(404).json(updatedCart);
+    } else {
+      res.json(updatedCart);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+//errores de rutas 
 app.use((req, res) => {
   res.status(404).send('Ruta no encontrada');
 });
 
-// Iniciando el servidor
+//inicia el sv
 app.listen(PORT, () => {
   console.log(`Servidor Express escuchando en el puerto ${PORT}`);
 });
-
-//Carts-------------------------------------------------------------------------
