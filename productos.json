@@ -1,23 +1,5 @@
 [
   {
-    "id": 1,
-    "codigo": "1",
-    "titulo": "Gaseosa de limón",
-    "descripcion": "Refrescante gaseosa sabor limón",
-    "precio": 2.5,
-    "thumbnail": "ruta/gaseosa_limón.jpg",
-    "stock": 20
-  },
-  {
-    "id": 2,
-    "codigo": "2",
-    "titulo": "Gaseosa de naranja",
-    "descripcion": "Refrescante gaseosa sabor naranja",
-    "precio": 2.5,
-    "thumbnail": "ruta/gaseosa_limón.jpg",
-    "stock": 20
-  },
-  {
     "id": 3,
     "codigo": "3",
     "titulo": "Infusión de manzanilla",
@@ -102,6 +84,21 @@
   },
   {
     "id": 958,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 397,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 437,
+    "status": true,
+    "thumbnails": []
+  },
+  {
+    "id": 273,
     "status": true,
     "thumbnails": []
   }

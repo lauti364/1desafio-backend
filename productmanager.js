@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const productsPath = path.join(__dirname, 'productos.json');
+const productsPath = path.join(__dirname, "./productos.json");
 
 async function getAllProducts(limit) {
   try {
@@ -64,7 +64,7 @@ async function updateProduct(productId, updatedProductData) {
       throw new Error('Producto no encontrado');
     }
 
-    // Actualiza el prodcuto
+    // Actualiza el producto
     products[index] = { ...products[index], ...updatedProductData };
 
     // lo actualiza en el json
@@ -80,12 +80,20 @@ async function deleteProduct(productId) {
   try {
     const data = await fs.readFile(productsPath, 'utf8');
     let products = JSON.parse(data);
+    const index = products.findIndex(product => product.id === productId);
+    if (index === -1) {
+      // Si el producto no existe, lanza un error indicando que el producto no fue encontrado
+      throw new Error('Producto no encontrado');
+    }
 
-    // excluye el producto del id selecionado osea lo borra
-    products = products.filter(product => product.id !== productId);
+    // Elimina el producto del array
+    const deletedProduct = products.splice(index, 1)[0];
 
-    // escreibe el nuevo array sin el producto borrado
+    // Escribe el nuevo array sin el producto eliminado
     await fs.writeFile(productsPath, JSON.stringify(products, null, 2));
+
+    // Devuelve el producto eliminado
+    return deletedProduct;
   } catch (error) {
     throw new Error('Error deleting product: ' + error.message);
   }
