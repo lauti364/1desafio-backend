@@ -2,16 +2,25 @@ const express = require('express');
 const router = express.Router();
 const { Mensaje, Producto, Carrito } = require('../models/user.model');
 
-// ruta para obtener todos los mensajes
-router.get('/mensajes', async (req, res) => {
+//rutas de messages
+router.post('/msj', async (req, res) => {
     try {
-        const mensajes = await Mensaje.find();
-        res.json(mensajes);
+      const { email, mensaje } = req.body;
+  
+      //hace el mesage con loos datos
+      const nuevoMensaje = new Mensaje({ email, mensaje: mensaje });
+      
+      // lo guarda en la base de datos
+      await nuevoMensaje.save();
+  
+      //muestra un mensaje si sale bien o mal
+      res.send('Mensaje enviado correctamente');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error interno del servidor');
+      console.error(error);
+      res.status(500).send('Error interno del servidor');
     }
-});
+  });
+  
 // agarra todos los productos
 router.get('/products', async (req, res) => {
     try {
@@ -83,4 +92,8 @@ router.post('/carts', async (req, res) => {
     }
 });
 
+router.get('/chat', (req, res) => {
+    // Aquí puedes pasar datos a la vista si es necesario
+    res.render('chat');
+});
 module.exports = router;

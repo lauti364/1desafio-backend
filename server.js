@@ -7,6 +7,8 @@ const { Mensaje, Producto, Carrito } = require('./models/user.model');
 const app = express();
 const PORT = 8080;
 
+
+
 app.use(express.json());
 
 // Rutas de productos
