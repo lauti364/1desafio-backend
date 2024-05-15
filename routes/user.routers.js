@@ -13,7 +13,7 @@ router.get('/mensajes', async (req, res) => {
     }
 });
 // agarra todos los productos
-router.get('/productos', async (req, res) => {
+router.get('/products', async (req, res) => {
     try {
         const productos = await Producto.find();
         res.json(productos);
@@ -24,10 +24,10 @@ router.get('/productos', async (req, res) => {
 });
 
 //para crear productos
-router.post('/productos', async (req, res) => {
+router.post('/products', async (req, res) => {
     try {
-        const { nombre, precio, descripcion } = req.body;
-        const nuevoProducto = new Producto({ nombre, precio, descripcion });
+        const { nombre, precio, descripcion, stock } = req.body;
+        const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
         await nuevoProducto.save();
         res.status(201).send('Producto guardado correctamente');
     } catch (error) {
@@ -36,8 +36,9 @@ router.post('/productos', async (req, res) => {
     }
 });
 
+
 // obtiene los carritos
-router.get('/carritos', async (req, res) => {
+router.get('/carts', async (req, res) => {
     try {
         const carritos = await Carrito.find();
         res.json(carritos);
@@ -48,11 +49,33 @@ router.get('/carritos', async (req, res) => {
 });
 
 //crear carrito
-router.post('/carritos', async (req, res) => {
+router.post('/carts', async (req, res) => {
     try {
-        const { productos, total } = req.body;
-        const nuevoCarrito = new Carrito({ productos, total });
+        const { productos } = req.body;
+
+        // busca x nombre y obtiene e precio
+        const productosIDs = await Promise.all(productos.map(async (producto) => {
+            const productoEncontrado = await Producto.findOne({ nombre: producto.nombre });
+            if (productoEncontrado) {
+                return { nombre: producto.nombre, cantidad: producto.cantidad, precio: productoEncontrado.precio };
+            } else {
+              //si no existe el product salta el null
+                return null; 
+            }
+        }));
+
+        // Ffiltra que ponga un product que exista
+        const productosValidos = productosIDs.filter((producto) => producto !== null);
+
+        // hace la * de products y cantidad
+        const totalCalculado = productosValidos.reduce((total, producto) => {
+            return total + (producto.precio * producto.cantidad);
+        }, 0);
+
+        //hace el carrito con los products y el total
+        const nuevoCarrito = new Carrito({ productos: productosValidos, total: totalCalculado });
         await nuevoCarrito.save();
+        
         res.status(201).send('Carrito guardado correctamente');
     } catch (error) {
         console.error(error);

@@ -15,15 +15,17 @@ const mensajeSchema = new mongoose.Schema({
 const productoSchema = new mongoose.Schema({
     nombre: { type: String, required: true, max: 100 },
     precio: { type: Number, required: true },
-    descripcion: { type: String, required: true }
+    descripcion: { type: String, required: true },
+    stock:{type:Number, required:true}
 });
 
 // Schema de carritos
 const carritoSchema = new mongoose.Schema({
-    productos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Producto' }], // Lista de productos en el carrito
-    total: { type: Number, required: true }
+    productos: [{
+        nombre: { type: String, required: true }, 
+        cantidad: { type: Number, required: true } 
+    }],
 });
-
 // Modelos
 const Mensaje = mongoose.model(mensajeCollection, mensajeSchema);
 const Producto = mongoose.model(productoCollection, productoSchema);

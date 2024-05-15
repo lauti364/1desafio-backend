@@ -76,80 +76,14 @@ app.delete('/products/:id', async (req, res) => {
   }
 });
 
-// Rutas de carritos
-app.post('/carts', (req, res) => {
-  try {
-    const newCart = cartManager.createCart();
-    res.status(201).json(newCart);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
-  }
-});
 
-app.get('/carts/:cid', (req, res) => {
-  try {
-    const cartId = req.params.cid;
-    const cart = cartManager.getCartById(cartId);
-    if (cart) {
-      res.json(cart);
-    } else {
-      res.status(404).send('Carrito no encontrado');
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
-  }
-});
+app.use('/api', userRouter);
 
-app.post('/carts/:cid/products/:pid', (req, res) => {
-  try {
-    const cartId = req.params.cid;
-    const productId = req.params.pid;
-    const quantity = req.body.quantity || 1;
-
-    const updatedCart = cartManager.addProductToCart(cartId, productId, quantity);
-    if (updatedCart.error) {
-      res.status(404).json(updatedCart);
-    } else {
-      res.json(updatedCart);
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
-  }
-});
-
-//ver los mensajes
-app.get('/mensajes', async (req, res) => {
-  try {
-    const mensajes = await Mensaje.find();
-    res.json(mensajes);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
-  }
-});
-
-//mandar mensajes
-app.post('/mensajes', async (req, res) => {
-  try {
-    const { mensaje, email } = req.body;
-    const nuevoMensaje = new Mensaje({ mensaje, email });
-    await nuevoMensaje.save();
-    res.status(201).send('Mensaje guardado correctamente');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error interno del servidor');
-  }
-});
-
-// Manejador de errores de rutas
+//erroes de rutas
 app.use((req, res) => {
   res.status(404).send('Ruta no encontrada');
 });
 
-// Conexión a la base de datos MongoDB
 mongoose.connect("mongodb+srv://lauti364:brisa2005@cluster0.utj99me.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
   .then(() => { console.log("Conectado a la base de datos") })
   .catch(error => console.error("Error en la conexión", error));
