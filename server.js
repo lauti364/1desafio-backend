@@ -1,19 +1,18 @@
 const express = require('express');
 const path = require('path');
-const productManager = require('./productmanager');
-const cartManager = require('./carts/cartmanager');
 const mongoose = require('mongoose');
-const userRouter  = require('./routes/user.routers');
+const userRouter = require('./routes/user.routers');
+const { Mensaje, Producto, Carrito } = require('./models/user.model');
+
 const app = express();
 const PORT = 8080;
 
 app.use(express.json());
 
-// agarra todos los productos con GET
+// Rutas de productos
 app.get('/products', async (req, res) => {
   try {
-    const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
-    const products = await productManager.getAllProducts(limit);
+    const products = await Producto.find();
     res.json(products);
   } catch (error) {
     console.error(error);
@@ -21,11 +20,10 @@ app.get('/products', async (req, res) => {
   }
 });
 
-// busca el producto x id
 app.get('/products/:id', async (req, res) => {
   try {
-    const productId = parseInt(req.params.id);
-    const product = await productManager.getProductById(productId);
+    const productId = req.params.id;
+    const product = await Producto.findById(productId);
     if (product) {
       res.json(product);
     } else {
@@ -37,11 +35,10 @@ app.get('/products/:id', async (req, res) => {
   }
 });
 
-// agrega productos con POST
 app.post('/products', async (req, res) => {
   try {
     const newProduct = req.body;
-    const createdProduct = await productManager.addProduct(newProduct);
+    const createdProduct = await Producto.create(newProduct);
     res.status(201).json(createdProduct);
   } catch (error) {
     console.error(error);
@@ -49,35 +46,37 @@ app.post('/products', async (req, res) => {
   }
 });
 
-//actualiza los productos x el id
 app.put('/products/:id', async (req, res) => {
   try {
-    const productId = parseInt(req.params.id);
-    const updatedProduct = await productManager.updateProduct(productId, req.body);
-    res.json(updatedProduct);
+    const productId = req.params.id;
+    const updatedProduct = await Producto.findByIdAndUpdate(productId, req.body, { new: true });
+    if (updatedProduct) {
+      res.json(updatedProduct);
+    } else {
+      res.status(404).send('Producto no encontrado');
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send('Error interno del servidor');
   }
 });
 
-// elimina pproductos x el id
 app.delete('/products/:id', async (req, res) => {
   try {
-    const productId = parseInt(req.params.id);
-    const deletedProduct = await productManager.deleteProduct(productId);
-    if (deletedProduct === null) {
-      res.status(404).send('Producto inexistente');
-    } else {
+    const productId = req.params.id;
+    const deletedProduct = await Producto.findByIdAndDelete(productId);
+    if (deletedProduct) {
       res.status(204).send();
+    } else {
+      res.status(404).send('Producto no encontrado');
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send('producto inexistente');
+    res.status(500).send('Error interno del servidor');
   }
 });
 
-// crea un nuevo cart
+// Rutas de carritos
 app.post('/carts', (req, res) => {
   try {
     const newCart = cartManager.createCart();
@@ -88,7 +87,6 @@ app.post('/carts', (req, res) => {
   }
 });
 
-// obtiene el cart x el id
 app.get('/carts/:cid', (req, res) => {
   try {
     const cartId = req.params.cid;
@@ -104,7 +102,6 @@ app.get('/carts/:cid', (req, res) => {
   }
 });
 
-// agregar productos al cart
 app.post('/carts/:cid/products/:pid', (req, res) => {
   try {
     const cartId = req.params.cid;
@@ -123,17 +120,41 @@ app.post('/carts/:cid/products/:pid', (req, res) => {
   }
 });
 
-//errores de rutas 
+//ver los mensajes
+app.get('/mensajes', async (req, res) => {
+  try {
+    const mensajes = await Mensaje.find();
+    res.json(mensajes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+//mandar mensajes
+app.post('/mensajes', async (req, res) => {
+  try {
+    const { mensaje, email } = req.body;
+    const nuevoMensaje = new Mensaje({ mensaje, email });
+    await nuevoMensaje.save();
+    res.status(201).send('Mensaje guardado correctamente');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+// Manejador de errores de rutas
 app.use((req, res) => {
   res.status(404).send('Ruta no encontrada');
 });
 
+// Conexión a la base de datos MongoDB
 mongoose.connect("mongodb+srv://lauti364:brisa2005@cluster0.utj99me.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-.then(() => { console.log("Conectado a la base de datos") })
-    .catch(error => console.error("Error en la conexion", error))
+  .then(() => { console.log("Conectado a la base de datos") })
+  .catch(error => console.error("Error en la conexión", error));
 
-app.use('/api/users', userRouter)
-//inicia el sv
+// Inicia el servidor
 app.listen(PORT, () => {
   console.log(`Servidor Express escuchando en el puerto ${PORT}`);
 });

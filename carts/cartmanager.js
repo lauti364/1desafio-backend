@@ -1,65 +1,46 @@
+const mongoose = require('mongoose');
+const Cart = require('../models/user.model'); 
 
-const fs = require('fs');
-const path = require('path');
-
-const CART_FILE_PATH = path.join(__dirname, '..', 'data', 'carrito.json');
-
-//carga los fatos desde el json
-function loadCartData() {
+// Función para crear un nuevo carrito
+async function createCart() {
     try {
-        const cartData = fs.readFileSync(CART_FILE_PATH, 'utf8');
-        return JSON.parse(cartData);
-    } catch (err) {
-        // Si hay un error al leer el archivo, devuelve un objeto con un array vacío
-        return { carts: [] };
+        const newCart = await Cart.create({ products: [] });
+        return newCart;
+    } catch (error) {
+        throw new Error('No se pudo crear el carrito');
     }
 }
 
-// guarda los datos del carrito en el Json
-function saveCartData(cartData) {
-    fs.writeFileSync(CART_FILE_PATH, JSON.stringify(cartData, null, 2), 'utf8');
-}
-
-// funciona un id unico
-function generateCartId() {
-    return Math.random().toString(36).substr(2, 9);
-}
-
-//crea un nuevo carrrito
-function createCart() {
-    const cartData = loadCartData();
-    const newCart = {
-        id: generateCartId(),
-        products: []
-    };
-    cartData.carts.push(newCart);
-    saveCartData(cartData);
-    return newCart;
-}
-
-//busca el carrito x el id
-function getCartById(cartId) {
-    const cartData = loadCartData();
-    return cartData.carts.find(cart => cart.id === cartId);
-}
-
-//agrega un producto al carrito
-function addProductToCart(cartId, productId, quantity = 1) {
-    const cartData = loadCartData();
-    const cart = cartData.carts.find(cart => cart.id === cartId);
-    if (!cart) {
-        return { error: 'Carrito no encontrado' };
+// Función para buscar un carrito por su ID
+async function getCartById(cartId) {
+    try {
+        const cart = await Cart.findById(cartId);
+        return cart;
+    } catch (error) {
+        throw new Error('No se pudo encontrar el carrito');
     }
+}
 
-    const existingProduct = cart.products.find(product => product.id === productId);
-    if (existingProduct) {
-        existingProduct.quantity += quantity;
-    } else {
-        cart.products.push({ id: productId, quantity });
+// Función para agregar un producto al carrito
+async function addProductToCart(cartId, productId, quantity = 1) {
+    try {
+        const cart = await Cart.findById(cartId);
+        if (!cart) {
+            return { error: 'Carrito no encontrado' };
+        }
+
+        const existingProductIndex = cart.products.findIndex(product => product.productId === productId);
+        if (existingProductIndex !== -1) {
+            cart.products[existingProductIndex].quantity += quantity;
+        } else {
+            cart.products.push({ productId, quantity });
+        }
+
+        await cart.save();
+        return cart;
+    } catch (error) {
+        throw new Error('No se pudo agregar el producto al carrito');
     }
-
-    saveCartData(cartData);
-    return cart;
 }
 
 module.exports = { createCart, getCartById, addProductToCart };

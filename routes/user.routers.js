@@ -1,58 +1,62 @@
 const express = require('express');
-const userModel = require('../models/user.model.js');
-
 const router = express.Router();
+const { Mensaje, Producto, Carrito } = require('../models/user.model');
 
-router.get('/', async (req, res) => {
+// ruta para obtener todos los mensajes
+router.get('/mensajes', async (req, res) => {
     try {
-        let users = await userModel.find();
-        res.send({ result: "success", payload: users });
+        const mensajes = await Mensaje.find();
+        res.json(mensajes);
     } catch (error) {
-        console.log(error);
-        res.status(500).send({ result: "error", message: "Error interno del servidor" });
+        console.error(error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+// agarra todos los productos
+router.get('/productos', async (req, res) => {
+    try {
+        const productos = await Producto.find();
+        res.json(productos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error interno del servidor');
     }
 });
 
-router.post('/', async (req, res) => {
-    let { nombre, apellido, email } = req.body;
-    if (!nombre || !apellido || !email) {
-        res.status(400).send({ status: "error", error: "Faltan parámetros" });
-        return;
-    }
+//para crear productos
+router.post('/productos', async (req, res) => {
     try {
-        let result = await userModel.create({ nombre, apellido, email });
-        res.status(201).send({ result: "success", payload: result });
+        const { nombre, precio, descripcion } = req.body;
+        const nuevoProducto = new Producto({ nombre, precio, descripcion });
+        await nuevoProducto.save();
+        res.status(201).send('Producto guardado correctamente');
     } catch (error) {
-        console.log(error);
-        res.status(500).send({ result: "error", message: "Error interno del servidor" });
+        console.error(error);
+        res.status(500).send('Error interno del servidor');
     }
 });
 
-router.put('/:uid', async (req, res) => {
-    let { uid } = req.params;
-    let userToReplace = req.body;
-
-    if (!userToReplace.nombre || !userToReplace.apellido || !userToReplace.email) {
-        res.status(400).send({ status: "error", error: "Parámetros no definidos" });
-        return;
-    }
+// obtiene los carritos
+router.get('/carritos', async (req, res) => {
     try {
-        let result = await userModel.updateOne({ _id: uid }, userToReplace);
-        res.send({ result: "success", payload: result });
+        const carritos = await Carrito.find();
+        res.json(carritos);
     } catch (error) {
-        console.log(error);
-        res.status(500).send({ result: "error", message: "Error interno del servidor" });
+        console.error(error);
+        res.status(500).send('Error interno del servidor');
     }
 });
 
-router.delete('/:uid', async (req, res) => {
-    let { uid } = req.params;
+//crear carrito
+router.post('/carritos', async (req, res) => {
     try {
-        let result = await userModel.deleteOne({ _id: uid });
-        res.send({ result: "success", payload: result });
+        const { productos, total } = req.body;
+        const nuevoCarrito = new Carrito({ productos, total });
+        await nuevoCarrito.save();
+        res.status(201).send('Carrito guardado correctamente');
     } catch (error) {
-        console.log(error);
-        res.status(500).send({ result: "error", message: "Error interno del servidor" });
+        console.error(error);
+        res.status(500).send('Error interno del servidor');
     }
 });
 
