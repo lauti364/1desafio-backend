@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Mensaje, Producto, Carrito } = require('../models/user.model');
+const { Mensaje, Producto, Carrito } = require('../../models/user.model');
 
 //rutas de messages
 router.post('/msj', async (req, res) => {

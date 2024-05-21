@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const userRouter = require('./routes/user.routers');
-const { Mensaje, Producto, Carrito } = require('./models/user.model');
+const userRouter = require('./dao/mongodb/routes/user.routers');
+const { Mensaje, Producto, Carrito } = require('./dao/models/user.model');
 
 const app = express();
 const PORT = 8080;
