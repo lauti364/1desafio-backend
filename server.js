@@ -1,3 +1,4 @@
+const exphbs  = require('express-handlebars').create({});
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -7,9 +8,15 @@ const { Mensaje, Producto, Carrito } = require('./dao/models/user.model');
 const app = express();
 const PORT = 8080;
 
+// usa hbs como plantilla
+app.engine('.handlebars', exphbs.engine);
+app.set('view engine', '.handlebars');
+app.set('views', path.join(__dirname, 'views'));
 
-
-app.use(express.json());
+// ruta de chat.hbs
+app.get('/', (req, res) => {
+  res.render('chat');
+});
 
 // Rutas de productos
 app.get('/products', async (req, res) => {
