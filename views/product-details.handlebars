@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{product.name}}</title>
+</head>
+<body>
+  <h1>{{products.nombre}}</h1>
+  <p>{{products.descripcion}}</p>
+  <p>Precio: ${{products.precio}}</p>
+  <p>stock: ${{products.stock}}</p>
+  <form action="/products/add-to-cart/{{product._id}}" method="POST">
+    <button type="submit">Añadir al carrito</button>
+  </form>
+  <a href="/api/products">Volver a la lista de productos</a>
+</body>
+</html>

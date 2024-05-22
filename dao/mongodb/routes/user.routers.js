@@ -21,32 +21,34 @@ router.post('/msj', async (req, res) => {
     }
   });
   
-// agarra todos los productos
+// Obtiene todos los productos
+
+
 router.get('/products', async (req, res) => {
     try {
-        //obtiene los requisitops de la consulta
+        // Obtiene los parámetros de la consulta
         let { limit = 10, page = 1, sort = '', query = '' } = req.query;
 
         limit = parseInt(limit);
         page = parseInt(page);
 
-        //hace el filtro para la busqeuda
+        // Permite buscar por nombre
         const filter = query ? { nombre: new RegExp(query, 'i') } : {};
 
-        // calcula cuantos products coinciden con nuestros filtros
+        // Calcula el total de documentos y las páginas
         const totalDocuments = await Producto.countDocuments(filter);
         const totalPages = Math.ceil(totalDocuments / limit);
 
-        // hace la consulta en la base de datos con los parametros solicitados
+        // Consulta los productos con los parámetros
         const productos = await Producto.find(filter)
             .limit(limit)
             .skip((page - 1) * limit)
-            .sort(sort);
+            .sort(sort)
+            .lean();
 
-        //categorias de las respuestas
+        // Prepara la respuesta
         const response = {
-            status: 'success',
-            payload: productos,
+            products: productos,
             totalPages: totalPages,
             prevPage: page > 1 ? page - 1 : null,
             nextPage: page < totalPages ? page + 1 : null,
@@ -57,8 +59,8 @@ router.get('/products', async (req, res) => {
             nextLink: page < totalPages ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null
         };
 
-        // muestra la respuesta al usuario
-        res.json(response);
+        // Renderiza la plantilla de productos con los datos
+        res.render('products', response);
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -67,18 +69,45 @@ router.get('/products', async (req, res) => {
         });
     }
 });
-//para crear productos
+
+
+
+
+// Vista para un producto específico
+router.get('/products/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Busca el producto por ID
+        const producto = await Producto.findById(id);
+
+        // Renderiza la plantilla de detalles de producto con los datos
+        res.render('product-details', { producto });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error interno del servidor'
+        });
+    }
+});
+
+// Crea un nuevo producto
 router.post('/products', async (req, res) => {
     try {
         const { nombre, precio, descripcion, stock } = req.body;
         const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
         await nuevoProducto.save();
-        res.status(201).send('Producto guardado correctamente');
+        res.status(200).send('Producto agregado correctamente');
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error interno del servidor');
+        res.status(500).json({
+            status: 'error',
+            message: 'Error interno del servidor'
+        });
     }
 });
+
 
 
 // obtiene los carritos
@@ -148,7 +177,7 @@ router.delete('/carts/:cid', async (req, res) => {
     }
 });
 
-router.put('/carts/:cid', async (req, res) => {
+router.get('/carts/:cid', async (req, res) => {
     try {
         const { cid } = req.params;
         const { products } = req.body;
