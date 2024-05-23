@@ -111,6 +111,7 @@ router.post('/products', async (req, res) => {
 
 
 // obtiene los carritos
+// Ruta para obtener todos los carritos
 router.get('/carts', async (req, res) => {
     try {
         const carritos = await Carrito.find();
@@ -121,32 +122,49 @@ router.get('/carts', async (req, res) => {
     }
 });
 
-//crear carrito
+// Ruta para obtener un carrito específico
+// Sin el .lean() no funciona lo mismo con los products
+router.get('/carts/:cid', async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const cart = await Carrito.findById(cartId).lean();
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Carrito no encontrado' });
+        }
+
+        res.render('cart', { cart });
+    } catch (error) {
+        console.error('Error al obtener el carrito:', error);
+        res.status(500).json({ message: 'Error al obtener el carrito', error: error.message || 'Unknown error' });
+    }
+});
+
+// Ruta para crear un nuevo carrito
 router.post('/carts', async (req, res) => {
     try {
         const { productos } = req.body;
 
-        // busca x nombre y obtiene e precio
+        // Busca productos por nombre y obtiene su precio
         const productosIDs = await Promise.all(productos.map(async (producto) => {
             const productoEncontrado = await Producto.findOne({ nombre: producto.nombre });
             if (productoEncontrado) {
                 return { nombre: producto.nombre, cantidad: producto.cantidad, precio: productoEncontrado.precio };
             } else {
-              //si no existe el product salta el null
-                return null; 
+                return null;
             }
         }));
 
-        // Ffiltra que ponga un product que exista
+        // Filtra productos que existan
         const productosValidos = productosIDs.filter((producto) => producto !== null);
 
-        // hace la * de products y cantidad
+        // Calcula el total
         const totalCalculado = productosValidos.reduce((total, producto) => {
             return total + (producto.precio * producto.cantidad);
         }, 0);
 
-        //hace el carrito con los products y el total
-        const nuevoCarrito = new Carrito({ productos: productosValidos, total: totalCalculado });
+        // Crea el carrito
+        const nuevoCarrito = new Carrito({ productos: productosValidos });
         await nuevoCarrito.save();
         
         res.status(201).send('Carrito guardado correctamente');

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carrito</title>
+</head>
+<body>
+  <h1>Contenido de tu carrito</h1>
+  {{#if cart.productos.length}}
+    <ul>
+      {{#each cart.productos}}
+        <li>
+          Producto: {{this.nombre}} - Cantidad: {{this.cantidad}}
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p>No hay productos en el carrito.</p>
+  {{/if}}
+</body>
+</html>
