@@ -2,7 +2,9 @@ const exphbs = require('express-handlebars').create({});
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const userRouter = require('./dao/mongodb/routes/user.routers');
+const userRouter = require('./routes/user.routers');
+const products = require('./routes/products.routes');
+const carrito = require('./routes/carts.routes');
 const app = express();
 const PORT = 8080;
 
@@ -19,10 +21,8 @@ app.get('/', (req, res) => {
   res.render('chat');
 });
 
-app.use('/products', userRouter);
-
 //rutas de usuario
-app.use('/api', userRouter);
+app.use('/api', userRouter,carrito,products);
 
 // errores de rutas
 app.use((req, res) => {
