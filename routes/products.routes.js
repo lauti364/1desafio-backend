@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const {Producto} = require('../dao/models/products.model');
+const { Producto } = require('../dao/models/products.model');
 
 // Obtiene todos los productos
-
-
 router.get('/products', async (req, res) => {
     try {
         // Obtiene los parámetros de la consulta
@@ -16,6 +14,9 @@ router.get('/products', async (req, res) => {
         // Permite buscar por nombre
         const filter = query ? { nombre: new RegExp(query, 'i') } : {};
 
+        // Validación para el parámetro de ordenamiento (sort)
+        const sortField = sort || '_id'; // Si sort está vacío, utiliza '_id' como campo de ordenamiento predeterminado
+
         // Calcula el total de documentos y las páginas
         const totalDocuments = await Producto.countDocuments(filter);
         const totalPages = Math.ceil(totalDocuments / limit);
@@ -24,7 +25,7 @@ router.get('/products', async (req, res) => {
         const productos = await Producto.find(filter)
             .limit(limit)
             .skip((page - 1) * limit)
-            .sort(sort)
+            .sort(sortField) // Utiliza sortField en lugar de sort
             .lean();
 
         // Prepara la respuesta
@@ -50,9 +51,6 @@ router.get('/products', async (req, res) => {
         });
     }
 });
-
-
-
 
 // Vista para un producto específico
 router.get('/products/:id', async (req, res) => {
@@ -88,4 +86,5 @@ router.post('/products', async (req, res) => {
         });
     }
 });
+
 module.exports = router;

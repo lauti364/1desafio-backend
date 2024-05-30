@@ -6,6 +6,16 @@
 </head>
 <body>
   <h1>Productos</h1>
+  
+  
+  <h2>Bienvenido, {{user.first_name}} {{user.last_name}}</h2>
+  <p>Email: {{user.email}}</p>
+  <p>Role: {{user.role}}</p>
+  
+  <form action="/api/sessions/logout" method="post">
+    <button type="submit">Logout</button>
+  </form>
+
   <h2>Lista de productos</h2>
   <ul>
     {{#each products}}
@@ -21,7 +31,7 @@
       </li>
     {{/each}}
   </ul>
- 
+
   <div class="pagination">
     {{#if response.hasPrevPage}}
       <a href="?page={{response.subtract response.currentPage 1}}">Anterior</a>
