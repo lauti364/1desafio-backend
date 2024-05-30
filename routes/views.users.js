@@ -19,4 +19,8 @@ router.get('/profile', isAuthenticated, async (req, res) => {
         res.status(500).send('Error al obtener el perfil del usuario');
     }
 });
+
+
+
+
 module.exports = router;

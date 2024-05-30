@@ -15,7 +15,7 @@ router.get('/products', async (req, res) => {
         const filter = query ? { nombre: new RegExp(query, 'i') } : {};
 
         // Validación para el parámetro de ordenamiento (sort)
-        const sortField = sort || '_id'; // Si sort está vacío, utiliza '_id' como campo de ordenamiento predeterminado
+        const sortField = sort || '_id'; 
 
         // Calcula el total de documentos y las páginas
         const totalDocuments = await Producto.countDocuments(filter);
@@ -25,7 +25,7 @@ router.get('/products', async (req, res) => {
         const productos = await Producto.find(filter)
             .limit(limit)
             .skip((page - 1) * limit)
-            .sort(sortField) // Utiliza sortField en lugar de sort
+            .sort(sortField) 
             .lean();
 
         // Prepara la respuesta

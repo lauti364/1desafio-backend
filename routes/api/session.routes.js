@@ -16,20 +16,35 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password)
     try {
         const user = await User.findOne({ email });
-        console.log(user)
         if (!user) return res.status(404).send('Usuario no encontrado');
-        req.session.user = {
-            id: user._id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            age: user.age,
-        };
-        console.log(req.session.user)
-        res.redirect('/profile');
+
+        // admins
+        if (email === 'lautivp16@gmail.com' && password === 'admin') {
+            req.session.user = {
+                id: user._id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                age: user.age,
+                role: 'admin' 
+            };
+        } 
+        //en xaso de ser usuario
+        else {
+            req.session.user = {
+                id: user._id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                age: user.age,
+                role: 'usuario' 
+            };
+        }
+        
+        console.log(req.session.user);
+        res.redirect('/api/products');
     } catch (err) {
         console.error(err);
         res.status(500).send('Error al iniciar sesión');
