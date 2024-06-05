@@ -1,12 +1,16 @@
 const express = require('express');
 const passport = require('passport');
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 const User = require('../../dao/models/usuarios.model');
+const { createHash, isValidPassword } = require('../../utils.js');
 
+// Ruta para registro
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;
     try {
-        const newUser = new User({ first_name, last_name, email, age, password });
+        const hashedPassword = createHash(password);
+        const newUser = new User({ first_name, last_name, email, age, password: hashedPassword });
         await newUser.save();
         res.redirect('/login');
     } catch (err) {
@@ -15,43 +19,14 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
-        if (!user) return res.status(404).send('Usuario no encontrado');
+//login cn passsport
+router.post('/login', passport.authenticate('local', {
+    successRedirect: '/api/products',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
 
-        // admins
-        if (email === 'lautivp16@gmail.com' && password === 'admin') {
-            req.session.user = {
-                id: user._id,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                age: user.age,
-                role: 'admin' 
-            };
-        } 
-        //en xaso de ser usuario
-        else {
-            req.session.user = {
-                id: user._id,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                age: user.age,
-                role: 'usuario' 
-            };
-        }
-        
-        console.log(req.session.user);
-        res.redirect('/api/products');
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error al iniciar sesión');
-    }
-});
-
+//rutas de logout
 router.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) return res.status(500).send('Error al cerrar sesión');
@@ -59,16 +34,12 @@ router.post('/logout', (req, res) => {
     });
 });
 
+// autenticacion de git
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
-//nuevo
-router.get("/github", passport.authenticate("github",{scope:["user:email"]}),async(req,res)=>{})
-
-
-router.get("/githubcallback",passport.authenticate("github",{failureRedirect:"/login"}),async(req,res)=>{
-    req.session.user=req.user
-    res.redirect("/")
-})
-
-
+router.get('/githubcallback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
+    req.session.user = req.user;
+    res.redirect('/');
+});
 
 module.exports = router;
