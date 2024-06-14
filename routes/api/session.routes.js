@@ -1,11 +1,10 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { flash } = require('express-flash');
 const User = require('../../dao/models/usuarios.model');
 const { createHash, isValidPassword } = require('../../utils.js');
 
-
+// Ruta de registro
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;
     try {
@@ -21,14 +20,20 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', passport.authenticate('login', { failureRedirect: 'faillogin' }), async (req, res) => {
-    if (!req.user) return res.status(400).send({ status: "error", error: "Datos incompletos" })
+// Ruta de login
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    console.log(email, password)
     try {
+        const user = await User.findOne({ email });
+        console.log(user)
+        if (!user) return res.status(404).send('Usuario no encontrado');
         req.session.user = {
-            first_name: req.user.first_name,
-            last_name: req.user.last_name,
-            email: req.user.email,
-            age: req.user.age,
+            id: user._id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            age: user.age,
         };
         console.log(req.session.user)
         res.redirect('/profile');
@@ -38,22 +43,17 @@ router.post('/login', passport.authenticate('login', { failureRedirect: 'faillog
     }
 });
 
-router.get('/faillogin', (req, res) => {
-    res.send({ error: "Login fallido" })
-})
-
+// Ruta de logout
 router.post('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/login');
+    req.logout((err) => {
+        if (err) { return next(err); }
+        res.redirect('/login');
+    });
 });
 
-
-//rutas de git
-
-// Ruta para iniciar la autenticación con GitHub
+// Rutas de GitHub
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
-// Ruta de callback para GitHub
 router.get('/githubcallback', 
     passport.authenticate('github', { failureRedirect: '/' }),
     (req, res) => {
@@ -61,4 +61,5 @@ router.get('/githubcallback',
         res.redirect('/api/products');
     }
 );
+
 module.exports = router;
