@@ -39,7 +39,6 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware para manejar mensajes flash
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
@@ -47,7 +46,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Middleware para parsear body de las peticiones
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -66,7 +64,6 @@ app.get('/', (req, res) => {
     res.render('chat');
 });
 
-// Ruta para manejar errores 404
 app.use((req, res) => {
     res.status(404).send('Ruta no encontrada');
 });
