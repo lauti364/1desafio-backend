@@ -36,16 +36,17 @@ router.post('/logout', (req, res) => {
     req.flash('success_msg', 'Sesión cerrada correctamente');
     res.redirect('/login');
 });
+//rutas de git
 
-// Ruta para iniciar sesión con GitHub
+// Ruta para iniciar la autenticación con GitHub
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
-
-router.get('/github/callback', passport.authenticate('github', {
-    failureRedirect: '/login',
-    failureFlash: true
-}), (req, res) => {
-    req.session.user = req.user;
-    res.redirect('/api/products');
-});
+// Ruta de callback para GitHub
+router.get('/githubcallback', 
+    passport.authenticate('github', { failureRedirect: '/' }),
+    (req, res) => {
+        // Autenticación exitosa
+        res.redirect('/');
+    }
+);
 module.exports = router;

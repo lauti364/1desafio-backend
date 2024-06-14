@@ -51,6 +51,11 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//passport
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Rutas
 app.use('/api/session', sessionRoutes);
 app.use('/', viewRoutes);
