@@ -1,17 +1,15 @@
-const bcrypt = require('bcrypt');
-//comprueba la contraseña
-async function isValidPassword(password, hashedPassword) {
-    try {
-        return await bcrypt.compare(password, hashedPassword);
-    } catch (error) {
-        throw new Error('Error al comparar contraseñas');
-    }
-}
-// hace el hassheo
-async function createHash(password) {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-    return hash;
-}
+const bcrypt = require('bcryptjs');
+//hace el hasheo de la contraseñas
+const createHash = (password) => {
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
+};
 
-module.exports = { createHash, isValidPassword };
+const isValidPassword = (user, password) => {
+    return bcrypt.compareSync(password, user.password);
+};
+
+module.exports = {
+    createHash,
+    isValidPassword
+};

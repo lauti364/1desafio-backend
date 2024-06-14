@@ -7,6 +7,7 @@ router.get('/login', isNotAuthenticated, (req, res) => {
     res.render('login');
 });
 
+
 router.get('/register', isNotAuthenticated, (req, res) => {
     res.render('register');
 });
