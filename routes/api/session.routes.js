@@ -5,11 +5,11 @@ const { flash } = require('express-flash');
 const User = require('../../dao/models/usuarios.model');
 const { createHash, isValidPassword } = require('../../utils.js');
 
-//rutas de register
+
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;
     try {
-        const hashedPassword = createHash(password);
+        const hashedPassword = await createHash(password);
         const newUser = new User({ first_name, last_name, email, age, password: hashedPassword });
         await newUser.save();
         req.flash('success_msg', 'Registro exitoso, por favor inicia sesión');
@@ -20,22 +20,20 @@ router.post('/register', async (req, res) => {
         res.status(500).redirect('/register');
     }
 });
-
-// rutas de login
 router.post('/login', passport.authenticate('local', {
-    //va ahi si los campos son correctos
-    successRedirect: '/login',
-    //va ahi si son incorrectos
-    failureRedirect: '/api/products',
+    successRedirect: '/api/products',
+    failureRedirect: '/register',
     failureFlash: true
 }));
 
-// Ruta para logout
+
+
 router.post('/logout', (req, res) => {
     req.logout();
-    req.flash('success_msg', 'Sesión cerrada correctamente');
     res.redirect('/login');
 });
+
+
 //rutas de git
 
 // Ruta para iniciar la autenticación con GitHub
@@ -46,7 +44,7 @@ router.get('/githubcallback',
     passport.authenticate('github', { failureRedirect: '/' }),
     (req, res) => {
         // Autenticación exitosa
-        res.redirect('/');
+        res.redirect('/api/products');
     }
 );
 module.exports = router;

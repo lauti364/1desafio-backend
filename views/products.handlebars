@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,15 +7,6 @@
 <body>
   <h1>Productos</h1>
 
-  {{#if user}}
-    <h2>Bienvenido a la tienda, {{user.first_name}}!</h2>
-    <form action="/api/sessions/logout" method="post">
-      <button type="submit">Cerrar sesión</button>
-    </form>
-  {{else}}
-    <p>Inicia sesión para ver los productos.</p>
-    <a href="/login">Iniciar sesión</a>
-  {{/if}}
   <h2>Lista de productos</h2>
   <ul>
     {{#each products}}
@@ -40,5 +32,6 @@
       <a href="?page={{response.add response.currentPage 1}}">Siguiente</a>
     {{/if}}
   </div>
+
 </body>
 </html>

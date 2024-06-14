@@ -2,7 +2,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
 const userService = require('../dao/models/usuarios.model.js');
-const { isValidPassword } = require('../utils.js');
+const { createHash, isValidPassword } = require('../utils.js');
 
 const initializePassport = () => {
 
@@ -33,21 +33,42 @@ const initializePassport = () => {
         }
     }))
 
+    passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+        try {
+            const user = await userService.findOne({ email });
 
+            if (!user) {
+                return done(null, false, { message: 'Usuario no encontrado' });
+            }
 
+            const isValid = await isValidPassword(password, user.password);
+
+            if (!isValid) {
+                return done(null, false, { message: 'Contraseña incorrecta' });
+            }
+
+            return done(null, user);
+
+        } catch (error) {
+            return done(error);
+        }
+    }));
+
+    // Serialización de usuario para sesiones
     passport.serializeUser((user, done) => {
-        done(null, user._id)
-    })
+        done(null, user._id);
+    });
 
+    // Deserialización de usuario para sesiones
     passport.deserializeUser(async (id, done) => {
-        let user = await userService.findById(id)
-        done(null, user)
-    })
+        try {
+            const user = await userService.findById(id);
+            done(null, user);
+        } catch (error) {
+            done(error);
+        }
+    });
+};
 
-
-
-
-
-}
 
 module.exports = initializePassport;
