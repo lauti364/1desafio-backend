@@ -1,48 +1,24 @@
-import UsuarioDAO from '../dao/usersDAO.js';
+const User = require('../dao/models/usuarios.model');
 
-const usuarioService = new UsuarioDAO();
-
-export const getAllUsuarios = async (req, res) => {
-  try {
-    const usuarios = await usuarioService.getAllUsuarios();
-    res.send({ status: "success", usuarios });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+const renderLogin = (req, res) => {
+    res.render('login');
 };
 
-export const getUsuarioById = async (req, res) => {
-  try {
-    const usuario = await usuarioService.getUsuarioById(req.params.id);
-    res.send({ status: "success", usuario });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+const renderRegister = (req, res) => {
+    res.render('register');
 };
 
-export const createUsuario = async (req, res) => {
-  try {
-    const usuario = await usuarioService.createUsuario(req.body);
-    res.send({ status: "success", usuario });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+const renderProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.session.user.id).lean();
+        res.render('profile', { user });
+    } catch (err) {
+        res.status(500).send('Error al obtener el perfil del usuario');
+    }
 };
 
-export const updateUsuario = async (req, res) => {
-  try {
-    const usuario = await usuarioService.updateUsuario(req.params.id, req.body);
-    res.send({ status: "success", usuario });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
-};
-
-export const deleteUsuario = async (req, res) => {
-  try {
-    await usuarioService.deleteUsuario(req.params.id);
-    res.send({ status: "success", message: "Usuario deleted" });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+module.exports = {
+    renderLogin,
+    renderRegister,
+    renderProfile
 };

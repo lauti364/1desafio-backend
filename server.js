@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const flash = require('express-flash');
@@ -14,27 +15,31 @@ const viewRoutes = require('./routes/views.users');
 const initializePassport = require('./config/passport.config');
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT;
+const MONGO_URL = process.env.MONGO_URL;
 
-// Configuración de Handlebars
+if (!MONGO_URL) {
+    console.error('Error: La variable de entorno MONGO_URL no está definida');
+    process.exit(1);
+}
+
+// hbs
 app.engine('.handlebars', exphbs.engine);
 app.set('view engine', '.handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-// Configuración de express-session
+//session
 app.use(session({
     secret: 'secretkey',
     resave: false,
     saveUninitialized: true,
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://lauti364:brisa2005@cluster0.utj99me.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+        mongoUrl: MONGO_URL
     }),
 }));
 
-// Configuración de express-flash
 app.use(flash());
 
-// Inicialización de Passport
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
@@ -49,17 +54,15 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//passport
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Rutas
+// rutas
 app.use('/api/session', sessionRoutes);
 app.use('/', viewRoutes);
 app.use('/api', userRouter, carrito, products);
 
-// Ruta de chat.hbs
 app.get('/', (req, res) => {
     res.render('chat');
 });
@@ -68,8 +71,8 @@ app.use((req, res) => {
     res.status(404).send('Ruta no encontrada');
 });
 
-// Conexión a MongoDB
-mongoose.connect("mongodb+srv://lauti364:brisa2005@cluster0.utj99me.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+// conecta a Mongo
+mongoose.connect(MONGO_URL)
     .then(() => { console.log("Conectado a la base de datos") })
     .catch(error => console.error("Error en la conexión", error));
 

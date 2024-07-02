@@ -43,6 +43,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
+
 // Ruta de logout
 router.post('/logout', (req, res) => {
     req.logout((err) => {

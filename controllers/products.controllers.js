@@ -1,48 +1,77 @@
-import ProductoDAO from '../dao/productsDAO.js';
+const { Producto } = require('../dao/models/products.model');
 
-const productoService = new ProductoDAO();
+const getAllProducts = async (req, res) => {
+    try {
+        let { limit = 10, page = 1, sort = '', query = '' } = req.query;
 
-export const getAllProductos = async (req, res) => {
-  try {
-    const productos = await productoService.getAllProductos();
-    res.send({ status: "success", productos });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+        limit = parseInt(limit);
+        page = parseInt(page);
+
+        const filter = query ? { nombre: new RegExp(query, 'i') } : {};
+        const sortField = sort || '_id'; 
+
+        const totalDocuments = await Producto.countDocuments(filter);
+        const totalPages = Math.ceil(totalDocuments / limit);
+
+        const productos = await Producto.find(filter)
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .sort(sortField)
+            .lean();
+
+        const response = {
+            products: productos,
+            totalPages: totalPages,
+            prevPage: page > 1 ? page - 1 : null,
+            nextPage: page < totalPages ? page + 1 : null,
+            page: page,
+            hasPrevPage: page > 1,
+            hasNextPage: page < totalPages,
+            prevLink: page > 1 ? `/products?limit=${limit}&page=${page - 1}&sort=${sort}&query=${query}` : null,
+            nextLink: page < totalPages ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null
+        };
+
+        res.render('products', response);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error interno del servidor'
+        });
+    }
 };
 
-export const getProductoById = async (req, res) => {
-  try {
-    const producto = await productoService.getProductoById(req.params.id);
-    res.send({ status: "success", producto });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+const getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const producto = await Producto.findById(id);
+        res.render('product-details', { producto });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error interno del servidor'
+        });
+    }
 };
 
-export const createProducto = async (req, res) => {
-  try {
-    const producto = await productoService.createProducto(req.body);
-    res.send({ status: "success", producto });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+const createProduct = async (req, res) => {
+    try {
+        const { nombre, precio, descripcion, stock } = req.body;
+        const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
+        await nuevoProducto.save();
+        res.status(200).send('Producto agregado correctamente');
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error interno del servidor'
+        });
+    }
 };
 
-export const updateProducto = async (req, res) => {
-  try {
-    const producto = await productoService.updateProducto(req.params.id, req.body);
-    res.send({ status: "success", producto });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
-};
-
-export const deleteProducto = async (req, res) => {
-  try {
-    await productoService.deleteProducto(req.params.id);
-    res.send({ status: "success", message: "Producto deleted" });
-  } catch (err) {
-    res.status(500).send({ status: "error", message: err.message });
-  }
+module.exports = {
+    getAllProducts,
+    getProductById,
+    createProduct
 };

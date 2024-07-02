@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     age: { type: Number, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['admin', 'usuario'], default: 'usuario', required: true },
-    cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }  // Referencia al carrito
+    cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }
 });
 
 userSchema.pre('save', async function(next) {
@@ -19,7 +19,7 @@ userSchema.pre('save', async function(next) {
     }
     next();
 });
-
+// crea el carrito al user nuevo
 userSchema.pre('save', async function(next) {
     if (this.isNew) {
         const cart = new Cart({ user: this._id, products: [] });
