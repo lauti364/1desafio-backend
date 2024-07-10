@@ -17,9 +17,18 @@ userSchema.pre('save', async function(next) {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
     }
+
+    //mails de admin
+
+    const adminEmails = ['admin@gmail.com', 'admin2@gmail.com']; 
+    if (adminEmails.includes(this.email)) {
+        this.role = 'admin';
+    }
     next();
 });
+
 // crea el carrito al user nuevo
+
 userSchema.pre('save', async function(next) {
     if (this.isNew) {
         const cart = new Cart({ user: this._id, products: [] });
@@ -32,5 +41,7 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
+
+
 
 module.exports = mongoose.model('User', userSchema);

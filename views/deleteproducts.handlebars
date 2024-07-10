@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    
+    <h2>Lista de Productos</h2>
+    <ul>
+        {{#each products}}
+        <li>
+            <strong>{{ nombre }}</strong> - Precio: {{ precio }} - Stock: {{ stock }}
+            <form action="/products/delete/{{ _id }}" method="POST">
+                <button type="submit">Eliminar</button>
+            </form>
+        </li>
+        {{/each}}
+    </ul>
+
+    <h2>Confirmación de Eliminación</h2>
+    {{#if product}}
+    <p>¿Estás seguro de que quieres eliminar el siguiente producto?</p>
+    <p>
+        <strong>{{ product.nombre }}</strong> - Precio: {{ product.precio }} - Stock: {{ product.stock }}
+    </p>
+    <form action="/products/delete/{{ product._id }}" method="POST">
+        <button type="submit">Confirmar Eliminación</button>
+    </form>
+    {{else}}
+    <p>Producto no encontrado.</p>
+    {{/if}}
+</body>
+</html>

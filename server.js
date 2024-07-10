@@ -7,12 +7,13 @@ const exphbs = require('express-handlebars').create({});
 const path = require('path');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
-const userRouter = require('./routes/user.routers');
+const userRouter = require('./routes/msj.routes');
 const products = require('./routes/products.routes');
 const carrito = require('./routes/carts.routes');
 const sessionRoutes = require('./routes/api/session.routes');
 const viewRoutes = require('./routes/views.users');
 const initializePassport = require('./config/passport.config');
+const authorizeRole  = require('./middleware/authorize')
 
 const app = express();
 const PORT = process.env.PORT;

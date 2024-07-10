@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+    <form action="/admin/products" method="POST">
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" id="nombre" required>
+        <br>
+        <label for="precio">Precio:</label>
+        <input type="number" name="precio" id="precio" required>
+        <br>
+        <label for="descripcion">Descripción:</label>
+        <input type="text" name="descripcion" id="descripcion" required>
+        <br>
+        <label for="stock">Stock:</label>
+        <input type="number" name="stock" id="stock" required>
+        <br>
+        <button type="submit">Crear Producto</button>
+    </form>
+</body>
+</html>

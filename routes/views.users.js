@@ -7,7 +7,7 @@ router.get('/login', isNotAuthenticated, renderLogin);
 
 router.get('/register', isNotAuthenticated, renderRegister);
 
-router.get('/profile', isAuthenticated, renderProfile);
+router.get('/current', isAuthenticated, renderProfile);
 
 module.exports = router;
 

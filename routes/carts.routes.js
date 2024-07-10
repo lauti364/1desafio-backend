@@ -8,8 +8,10 @@ const {
     updateCart,
     updateCartProductQuantity,
     deleteCartProduct,
-    populateCartProducts
+    populateCartProducts,
+    addProductToCart
 } = require('../controllers/carts.controllers');
+const authorizeRole  = require('../middleware/authorize')
 
 // obtiene todos los carritos
 router.get('/carts', getAllCarts);
@@ -32,7 +34,11 @@ router.put('/carts/:cid/products/:pid', updateCartProductQuantity);
 // elimina un producto especifico
 router.delete('/carts/:cid/products/:pid', deleteCartProduct);
 
+
 // obtiene todo usando populate
 router.get('/carts/:cid/populate', populateCartProducts);
+
+//agregar products x id
+router.post('/carts/:cid/products/:productId', authorizeRole('usuario'), addProductToCart);
 
 module.exports = router;

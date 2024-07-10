@@ -6,12 +6,11 @@ const { createHash, isValidPassword } = require('../utils.js');
 
 const initializePassport = () => {
     passport.use('github', new GitHubStrategy({
-        clientID: "Iv23lidNVeCVp9cbIiEk",
-        clientSecret: "e79b5370f24d9aea4c38fc6b24cb2f1d51188804",
+        clientID: "YOUR_CLIENT_ID",
+        clientSecret: "YOUR_CLIENT_SECRET",
         callbackURL: "http://localhost:8080/api/session/githubcallback"
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            console.log(profile);
             let user = await userService.findOne({ email: profile._json.email });
             if (!user) {
                 let newUser = {
@@ -59,26 +58,26 @@ const initializePassport = () => {
         try {
             const user = await userService.findOne({ email: username });
             if (!user) {
-                console.log("El usuario no existe");
                 return done(null, false, { message: 'Usuario no encontrado' });
             }
-            if (!isValidPassword(user, password)) {
+            const isPasswordValid = isValidPassword(user, password);
+            if (!isPasswordValid) {
                 return done(null, false, { message: 'Contraseña incorrecta' });
             }
-            return done(null, user);
+            return done(null, user); // Establece req.user después de la autenticación
         } catch (error) {
             return done(error);
         }
     }));
 
     passport.serializeUser((user, done) => {
-        done(null, user._id);
+        done(null, user._id); // Serializa solo el ID del usuario en la sesión
     });
 
     passport.deserializeUser(async (id, done) => {
         try {
             let user = await userService.findById(id);
-            done(null, user);
+            done(null, user); // Coloca el usuario completo en req.user
         } catch (error) {
             done(error);
         }

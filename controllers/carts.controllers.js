@@ -155,6 +155,19 @@ const populateCartProducts = async (req, res) => {
     }
 };
 
+const addProductToCart = async (req, res) => {
+    const { cartId, productId } = req.params;
+    const { quantity } = req.body;
+
+    try {
+        const updatedCart = await CartDAO.addProductToCart(cartId, productId, quantity);
+
+        res.status(200).json({ message: 'Producto agregado al carrito correctamente', cart: updatedCart });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al agregar el producto al carrito');
+    }
+};
 module.exports = {
     getAllCarts,
     getCartById,
@@ -163,5 +176,6 @@ module.exports = {
     updateCart,
     updateCartProductQuantity,
     deleteCartProduct,
-    populateCartProducts
+    populateCartProducts,
+    addProductToCart
 };
