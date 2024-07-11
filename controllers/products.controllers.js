@@ -59,8 +59,21 @@ const createProduct = async (req, res) => {
     try {
         console.log('Datos recibidos:', req.body);
         const { nombre, precio, descripcion, stock } = req.body;
+
+        // Buscar el producto por su nombre
+        const existingProduct = await Producto.findOne({ nombre });
+
+        // Si existe, eliminar el producto existente
+        if (existingProduct) {
+            await Producto.findByIdAndDelete(existingProduct._id);
+            console.log(`Producto "${nombre}" existente eliminado.`);
+            return res.status(200).send('Producto eliminado correctamente');
+        }
+
+        // Si no existe, crear el nuevo producto
         const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
         await nuevoProducto.save();
+        
         res.status(200).send('Producto agregado correctamente');
     } catch (error) {
         console.error(error);
@@ -71,26 +84,8 @@ const createProduct = async (req, res) => {
     }
 };
 
-const deleteProductById = async (req, res) => {
-    const productId = req.params.id;
-
-    try {
-        const deletedProduct = await Producto.findByIdAndDelete(productId);
-
-        if (!deletedProduct) {
-            return res.status(404).send('Producto no encontrado');
-        }
-
-        res.status(200).json({ message: 'Producto eliminado correctamente', deletedProduct });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error al eliminar el producto');
-    }
-};
-
 module.exports = {
     getAllProducts,
     getProductById,
     createProduct,
-    deleteProductById
 };

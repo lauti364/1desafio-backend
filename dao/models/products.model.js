@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Definición del esquema de producto
 const productoSchema = new mongoose.Schema({
     nombre: { type: String, required: true, max: 100 },
     precio: { type: Number, required: true },
@@ -8,6 +7,5 @@ const productoSchema = new mongoose.Schema({
     stock: { type: Number, required: true }
 });
 
-const Producto = mongoose.model('Producto', productoSchema); // Nombre del modelo y esquema asociado
-
-module.exports = Producto; // Exporta el modelo
+const Producto = mongoose.model('Producto', productoSchema);
+module.exports = Producto;

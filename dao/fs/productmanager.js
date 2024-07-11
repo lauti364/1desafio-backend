@@ -1,6 +1,6 @@
 const Producto = require('./models/user.model');
 // Obtener todos los productos
-async function getAllProducts(limit) {
+async function getAllProduct(limit) {
   try {
     let products;
     if (limit) {
@@ -55,7 +55,7 @@ async function deleteProduct(productId) {
 }
 
 module.exports = {
-  getAllProducts,
+  getAllProduct,
   getProductById,
   addProduct,
   updateProduct,

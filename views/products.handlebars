@@ -5,7 +5,15 @@
   <title>Productos</title>
 </head>
 <body>
+
   <h1>Productos Disponibles</h1>
+  <h2>
+    <p>Nombre: {{user.first_name}}</p>
+    <p>Apellido: {{user.last_name}}</p>
+    <p>Email: {{user.email}}</p>
+    <p>Edad: {{user.age}}</p>
+    <p>Carrito: {{user.cart}}</p>
+  </h2>
 
   <ul>
     {{#each products}}
@@ -15,10 +23,12 @@
         <p>Precio: ${{this.precio}}</p>
         <p>Stock: {{this.stock}}</p>
         
-        <form action="/api/carts/{{user.carrito}}/products/{{this._id}}" method="POST">
+        <form class="add-to-cart-form" action="/carts/this.cart/products/{{this._id}}" method="POST">
+          <input type="hidden" name="productId" value="{{this._id}}">
           <input type="number" name="quantity" value="1" min="1" max="{{this.stock}}">
           <button type="submit">Añadir al carrito</button>
         </form>
+        
       </li>
     {{/each}}
   </ul>

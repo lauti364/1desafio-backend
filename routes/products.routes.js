@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllProducts, getProductById, createProduct, deleteProductById } = require('../controllers/products.controllers');
+const { getAllProducts, getProductById, createProduct,} = require('../controllers/products.controllers');
 const authorizeRole = require('../middleware/authorize');
 const Producto = require('../dao/models/products.model');
 
@@ -13,8 +13,7 @@ router.get('/products/:id', getProductById);
 // Crea un nuevo producto
 router.post('/products', authorizeRole('admin'), createProduct);
 
-// Borrar un producto por ID
-router.delete('/products/:id', authorizeRole('admin'), deleteProductById);
+
 
 // Admin
 // Mostrar formulario de crear producto
@@ -40,21 +39,6 @@ router.get('/delete', authorizeRole('admin'), async (req, res) => {
 router.post('/', authorizeRole('admin'), createProduct);
 
 // Eliminar producto (solo administrador)
-router.post('/delete/:id', authorizeRole('admin'), async (req, res) => {
-    const productId = req.params.id;
 
-    try {
-        const deletedProduct = await Producto.findByIdAndDelete(productId);
-
-        if (!deletedProduct) {
-            return res.status(404).send('Producto no encontrado');
-        }
-
-        res.status(200).json({ message: 'Producto eliminado correctamente', deletedProduct });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error al eliminar el producto');
-    }
-});
 
 module.exports = router;

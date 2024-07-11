@@ -1,11 +1,11 @@
 
-const { Carrito } = require('../dao/models/carts.model');
+const { Cart} = require('../dao/models/cart.model');
 const { Producto } = require('../dao/models/products.model');
 const {cartDAO} = require('../dao/carts.dao');
-
+const {ProductoDAO} = require('../dao/products.dao')
 const getAllCarts = async (req, res) => {
     try {
-        const carritos = await Carrito.find();
+        const carritos = await Cart.find();
         res.json(carritos);
     } catch (error) {
         console.error(error);
@@ -144,6 +144,37 @@ const populateCartProducts = async (req, res) => {
     }
 };
 
+
+const addProductToUserCart = async (req, res) => {
+    const { cartId, productId } = req.params;
+    const { quantity } = req.body;
+
+    try {
+        // Verifica si el carrito existe
+        let cart = await Cart.findById(cartId);
+
+        if (!cart) {
+            return res.status(404).send('El carrito especificado no existe');
+        }
+
+        // Verifica si el producto existe
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).send('El producto especificado no existe');
+        }
+
+        // Agrega el producto al carrito con la cantidad especificada
+        cart.products.push({ product: productId, quantity: parseInt(quantity, 10) });
+        await cart.save();
+
+        res.redirect('/addtocart'); // Redirige a donde corresponda después de agregar al carrito
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al agregar producto al carrito');
+    }
+};
+
 module.exports = {
     getAllCarts,
     getCartById,
@@ -152,5 +183,5 @@ module.exports = {
     updateCart,
     updateCartProductQuantity,
     deleteCartProduct,
-    populateCartProducts
+    populateCartProducts,addProductToUserCart
 };

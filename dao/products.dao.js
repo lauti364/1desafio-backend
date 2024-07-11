@@ -1,9 +1,26 @@
-import Producto from './models/products.model';
-
+const Producto = require('./models/products.model');
 class ProductoDAO {
-  async getAllProductos() {
-    return await Producto.find();
+  async getAllProductos(filter = {}, limit = 10, page = 1, sort = '_id') {
+      const totalDocuments = await Producto.countDocuments(filter);
+      const totalPages = Math.ceil(totalDocuments / limit);
+
+      const productos = await Producto.find(filter)
+          .limit(limit)
+          .skip((page - 1) * limit)
+          .sort(sort)
+          .lean();
+
+      return {
+          products: productos,
+          totalPages: totalPages,
+          prevPage: page > 1 ? page - 1 : null,
+          nextPage: page < totalPages ? page + 1 : null,
+          page: page,
+          hasPrevPage: page > 1,
+          hasNextPage: page < totalPages
+      };
   }
+
 
   async getProductoById(id) {
     return await Producto.findById(id);
@@ -23,4 +40,4 @@ class ProductoDAO {
   }
 }
 
-export default ProductoDAO;
+module.exports = new ProductoDAO();

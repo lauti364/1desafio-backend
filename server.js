@@ -64,13 +64,15 @@ app.use((req, res, next) => {
 app.use('/api/session', sessionRoutes);
 app.use('/', viewRoutes); 
 app.use('/api', userRouter); 
-app.use('/api', cartRouter); 
+app.use('/api', cartRouter,); 
 app.use('/api', productsRouter); 
 
 // Ruta principal
 app.get('/', (req, res) => {
     res.render('chat'); // Renderiza la vista principal
 });
+
+
 
 // Manejador para rutas no encontradas
 app.use((req, res) => {
