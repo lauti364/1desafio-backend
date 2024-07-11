@@ -6,8 +6,8 @@ const { createHash, isValidPassword } = require('../utils.js');
 
 const initializePassport = () => {
     passport.use('github', new GitHubStrategy({
-        clientID: "YOUR_CLIENT_ID",
-        clientSecret: "YOUR_CLIENT_SECRET",
+        clientID: "Iv23lidNVeCVp9cbIiEk",
+        clientSecret: "f9fac0bb3ed46dfabd67cf59c8eee797749bc0e8",
         callbackURL: "http://localhost:8080/api/session/githubcallback"
     }, async (accessToken, refreshToken, profile, done) => {
         try {
@@ -64,7 +64,7 @@ const initializePassport = () => {
             if (!isPasswordValid) {
                 return done(null, false, { message: 'Contraseña incorrecta' });
             }
-            return done(null, user); // Establece req.user después de la autenticación
+            return done(null, user);
         } catch (error) {
             return done(error);
         }

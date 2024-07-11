@@ -1,4 +1,4 @@
-const { Producto } = require('../dao/models/products.model');
+const Producto = require('../dao/models/products.model'); 
 
 const getAllProducts = async (req, res) => {
     try {
@@ -8,7 +8,7 @@ const getAllProducts = async (req, res) => {
         page = parseInt(page);
 
         const filter = query ? { nombre: new RegExp(query, 'i') } : {};
-        const sortField = sort || '_id'; 
+        const sortField = sort || '_id';
 
         const totalDocuments = await Producto.countDocuments(filter);
         const totalPages = Math.ceil(totalDocuments / limit);
@@ -69,20 +69,21 @@ const createProduct = async (req, res) => {
         });
     }
 };
+
 const deleteProductById = async (req, res) => {
-    const productId = req.params.id; // Obtener el ID del producto desde los parámetros de la URL
+    const productId = req.params.id;
 
     try {
-        const deletedProduct = await ProductDAO.deleteProducto(productId);
+        const deletedProduct = await Producto.findByIdAndDelete(productId);
 
         if (!deletedProduct) {
-            return res.status(404).send('Producto no encontrado'); // Si no se encuentra el producto
+            return res.status(404).send('Producto no encontrado');
         }
 
         res.status(200).json({ message: 'Producto eliminado correctamente', deletedProduct });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error al eliminar el producto'); // Si hay un error en la eliminación
+        res.status(500).send('Error al eliminar el producto');
     }
 };
 

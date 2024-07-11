@@ -34,7 +34,8 @@ router.post('/login', async (req, res) => {
             last_name: user.last_name,
             email: user.email,
             age: user.age,
-            rol:user.role
+            rol:user.role,
+            cart:user.cart
         };
         console.log(req.session.user)
         res.redirect('/current');

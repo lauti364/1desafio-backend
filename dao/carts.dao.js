@@ -1,4 +1,5 @@
-import Cart from './models/carts.model';
+const Cart = require('../dao/models/carts.model');
+
 class CartDAO {
   async createCart(cartData) {
     const cart = new Cart(cartData);
@@ -37,4 +38,4 @@ class CartDAO {
   }
 }
 
-export default CartDAO;
+module.exports = CartDAO;
