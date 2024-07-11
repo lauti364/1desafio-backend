@@ -16,6 +16,7 @@ router.post('/products', authorizeRole('admin'), createProduct);
 
 
 // Admin
+
 // Mostrar formulario de crear producto
 router.get('/create', authorizeRole('admin'), (req, res) => {
     res.render('crearp', { title: 'Crear Producto' });

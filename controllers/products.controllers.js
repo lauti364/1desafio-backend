@@ -28,7 +28,8 @@ const getAllProducts = async (req, res) => {
             hasPrevPage: page > 1,
             hasNextPage: page < totalPages,
             prevLink: page > 1 ? `/products?limit=${limit}&page=${page - 1}&sort=${sort}&query=${query}` : null,
-            nextLink: page < totalPages ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null
+            nextLink: page < totalPages ? `/products?limit=${limit}&page=${page + 1}&sort=${sort}&query=${query}` : null,
+            user: req.session.user
         };
 
         res.render('products', response);

@@ -23,7 +23,7 @@
         <p>Precio: ${{this.precio}}</p>
         <p>Stock: {{this.stock}}</p>
         
-        <form class="add-to-cart-form" action="/carts/this.cart/products/{{this._id}}" method="POST">
+        <form class="add-to-cart-form" action="/carts/{{../user.cart}}/products/{{this._id}}" method="POST">
           <input type="hidden" name="productId" value="{{this._id}}">
           <input type="number" name="quantity" value="1" min="1" max="{{this.stock}}">
           <button type="submit">Añadir al carrito</button>
