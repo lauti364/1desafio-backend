@@ -57,6 +57,7 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
     try {
+        console.log('Datos recibidos:', req.body);
         const { nombre, precio, descripcion, stock } = req.body;
         const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
         await nuevoProducto.save();

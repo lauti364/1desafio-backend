@@ -19,7 +19,7 @@ router.delete('/products/:id', authorizeRole('admin'), deleteProductById);
 // Admin
 // Mostrar formulario de crear producto
 router.get('/create', authorizeRole('admin'), (req, res) => {
-    res.render('createProduct', { title: 'Crear Producto' });
+    res.render('crearp', { title: 'Crear Producto' });
 });
 
 // Mostrar todos los productos y formulario de eliminación

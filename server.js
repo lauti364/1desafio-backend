@@ -29,6 +29,10 @@ app.engine('.handlebars', exphbs.engine);
 app.set('view engine', '.handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
 // Configuración de sesiones
 app.use(session({
     secret: 'secretkey',
@@ -40,32 +44,28 @@ app.use(session({
     }),
 }));
 
-// Middleware de mensajes flash
 app.use(flash());
-// Inicialización de Passport.js
+
 initializePassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware para manejar mensajes flash en todas las vistas
+
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
-    res.locals.user = req.user; // Agrega el usuario al contexto de la vista
+    res.locals.user = req.user; 
     next();
 });
 
-// Middleware para parsear cuerpos de solicitud
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 // Rutas
 app.use('/api/session', sessionRoutes);
-app.use('/', viewRoutes); // Rutas para vistas de usuario
-app.use('/api', userRouter); // Rutas para API de usuarios
-app.use('/api', cartRouter); // Rutas para API de carritos
-app.use('/api', productsRouter); // Rutas para API de productos
+app.use('/', viewRoutes); 
+app.use('/api', userRouter); 
+app.use('/api', cartRouter); 
+app.use('/api', productsRouter); 
 
 // Ruta principal
 app.get('/', (req, res) => {
