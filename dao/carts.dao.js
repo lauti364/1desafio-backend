@@ -8,24 +8,30 @@ class CartDAO {
       if (!cart) {
         throw new Error(`Carrito no encontrado para ID ${cartId}`);
       }
-  
+
       const product = await Producto.findById(productId);
       if (!product) {
         throw new Error(`Producto no encontrado para ID ${productId}`);
       }
-  
+
       if (product.stock < quantity) {
         throw new Error('No hay suficiente stock disponible');
       }
-  
-      const existingProductIndex = cart.products.findIndex(item => item.product.equals(productId));
-  
+
+      console.log('Cart products before adding:', cart.products);
+      console.log('Product ID to add:', productId);
+
+      const existingProductIndex = cart.products.findIndex(item => item.product && item.product.equals(productId));
+
       if (existingProductIndex !== -1) {
-        cart.products[existingProductIndex].quantity += quantity;
-      } else {
-        cart.products.push({ product: productId, quantity });
-      }
-  
+        cart.products[existingProductIndex].quantity = Number(cart.products[existingProductIndex].quantity) + Number(quantity);
+    } else {
+        cart.products.push({ product: productId, quantity: Number(quantity) });
+    }
+
+      console.log('Cart products after adding:', cart.products);
+
+      await product.save(); // Decrementar el stock del producto
       return await cart.save();
     } catch (error) {
       console.error('Error al agregar productos al carrito:', error);
@@ -50,5 +56,6 @@ class CartDAO {
     return await Cart.findByIdAndDelete(cartId);
   }
 }
+
 
 module.exports = new CartDAO();
