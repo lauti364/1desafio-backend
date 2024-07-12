@@ -6,10 +6,9 @@
 </head>
 <body>
 
-  <h1>Productos Disponibles</h1>
+  <h1>Agregar Productos al Carrito</h1>
   <h2>
-    <p>Nombre: {{user.first_name}}</p>
-    <p>Apellido: {{user.last_name}}</p>
+    <p>Nombre: {{user.first_name}} {{user.last_name}}</p>
     <p>Email: {{user.email}}</p>
     <p>Edad: {{user.age}}</p>
     <p>Carrito: {{user.cart}}</p>
@@ -23,12 +22,12 @@
         <p>Precio: ${{this.precio}}</p>
         <p>Stock: {{this.stock}}</p>
         
-        <form class="add-to-cart-form" action="/carts/{{../user.cart}}/products/{{this._id}}" method="POST">
-          <input type="hidden" name="productId" value="{{this._id}}">
-          <input type="number" name="quantity" value="1" min="1" max="{{this.stock}}">
-          <button type="submit">Añadir al carrito</button>
-        </form>
-        
+       <form class="add-to-cart-form" action="/api/carts/add-product/{{this._id}}" method="POST">
+  <input type="hidden" name="productId" value="{{this._id}}">
+  <input type="number" name="quantity" value="1" min="1" max="{{this.stock}}">
+  <button type="submit">Añadir al carrito</button>
+</form>
+
       </li>
     {{/each}}
   </ul>
@@ -42,6 +41,6 @@
       <a href="?page={{response.add response.currentPage 1}}">Siguiente</a>
     {{/if}}
   </div>
-
+s
 </body>
 </html>

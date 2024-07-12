@@ -22,7 +22,7 @@ async function getCartById(cartId) {
 }
 
 // Función para agregar un producto al carrito
-async function addProductToCart(cartId, productId, quantity = 1) {
+async function addProductToCar(cartId, productId, quantity = 1) {
     try {
         const cart = await Cart.findById(cartId);
         if (!cart) {
@@ -43,4 +43,4 @@ async function addProductToCart(cartId, productId, quantity = 1) {
     }
 }
 
-module.exports = { createCart, getCartById, addProductToCart };
+module.exports = { createCart, getCartById, addProductToCar };

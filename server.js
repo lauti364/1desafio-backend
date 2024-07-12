@@ -69,7 +69,7 @@ app.use('/api', productsRouter);
 
 // Ruta principal
 app.get('/', (req, res) => {
-    res.render('chat'); // Renderiza la vista principal
+    res.render('chat');
 });
 
 

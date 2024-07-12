@@ -6,13 +6,11 @@ router.post('/chat', authorizeRole(['usuario']), async (req, res) => {
     try {
         const { email, mensaje } = req.body;
 
-        // Crear el mensaje con los datos recibidos
+        // crea un mensaje con los datos qu se reciben
         const nuevoMensaje = new Mensaje({ email, mensaje });
 
-        // Guardar el mensaje en la base de datos
         await nuevoMensaje.save();
 
-        // Enviar respuesta de éxito
         res.send('Mensaje enviado correctamente');
     } catch (error) {
         console.error(error);
@@ -21,7 +19,7 @@ router.post('/chat', authorizeRole(['usuario']), async (req, res) => {
 });
 
 router.get('/chat', authorizeRole(['usuario']), (req, res) => {
-    res.render('chat'); // Renderiza la vista 'chat' solo si el usuario tiene el rol 'usuario'
+    res.render('chat');
 });
 
 module.exports = router;

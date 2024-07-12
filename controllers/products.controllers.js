@@ -61,17 +61,15 @@ const createProduct = async (req, res) => {
         console.log('Datos recibidos:', req.body);
         const { nombre, precio, descripcion, stock } = req.body;
 
-        // Buscar el producto por su nombre
+        // busca el producto por el nombre y si existe lo borra
         const existingProduct = await Producto.findOne({ nombre });
-
-        // Si existe, eliminar el producto existente
         if (existingProduct) {
             await Producto.findByIdAndDelete(existingProduct._id);
             console.log(`Producto "${nombre}" existente eliminado.`);
             return res.status(200).send('Producto eliminado correctamente');
         }
 
-        // Si no existe, crear el nuevo producto
+        // si no existe otro igual crea uno nuevo
         const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
         await nuevoProducto.save();
         
