@@ -13,7 +13,7 @@ const {
 const authorizeRole = require('../middleware/authorize');
 
 // agregar producto al caart del usuario(pendiente)
-router.post('/carts/add-product/:productId', addProductsToCart);
+router.post('/carts/:cartId/add-product/:productId', addProductsToCart);
 
 
 //finañizar compra
