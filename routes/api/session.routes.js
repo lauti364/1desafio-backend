@@ -23,28 +23,33 @@ router.post('/register', async (req, res) => {
 // Ruta de login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password)
     try {
         const user = await User.findOne({ email });
-        console.log(user)
-        if (!user) return res.status(404).send('Usuario no encontrado');
+
+        if (!user) {
+            return res.status(404).send('Usuario no encontrado');
+        }
+
+        // Obtener el carrito del usuario con sus productos
+        const populatedUser = await User.findById(user._id).populate('cart.products.product');
+
         req.session.user = {
             id: user._id,
             first_name: user.first_name,
             last_name: user.last_name,
             email: user.email,
             age: user.age,
-            rol:user.role,
-            cart:user.cart
+            rol: user.role,
+            cart: populatedUser.cart
         };
-        console.log(req.session.user)
-        res.redirect('/current');
 
+        console.log(req.session.user);
+        res.redirect('/current');
     } catch (err) {
+        console.error(err);
         res.status(500).send('Error al iniciar sesión');
     }
 });
-
 
 // Ruta de logout
 router.post('/logout', (req, res) => {
@@ -65,5 +70,4 @@ router.get('/githubcallback',
     }
 );
 
-module.exports = router;
-
+module.exports = router; 

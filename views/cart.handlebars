@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Carrito</title>
+    <meta charset="UTF-8">
+    <title>My Cart</title>
 </head>
 <body>
-  <h1>Contenido de tu carrito</h1>
-  {{#if cart.productos.length}}
-    <ul>
-      {{#each cart.productos}}
-        <li>
-          Producto: {{this.nombre}} - Cantidad: {{this.cantidad}}
-        </li>
-      {{/each}}
-    </ul>
-  {{else}}
-    <p>No hay productos en el carrito.</p>
-  {{/if}}
+    <div class="cart-container">
+        <h1>My Cart</h1>
+        {{#if cart.products.length}}
+            <ul>
+                {{#each cart.products}}
+                    <li class="product-item">
+                        <h3>{{this.product.nombre}}</h3>
+                        <p>Precio: {{this.product.precio}}</p>
+                        <p>Cantidad: {{this.quantity}}</p>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>Your cart is empty.</p>
+        {{/if}}
+    </div>
 </body>
 </html>

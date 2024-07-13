@@ -45,8 +45,11 @@ class CartDAO {
   }
 
   async getCartById(cartId) {
-    return await Cart.findById(cartId).populate('user').populate('products.product');
-  }
+    console.log(`DAO: Fetching cart by ID: ${cartId}`);
+    const cart = await Cart.findById(cartId).populate('user').populate('products.product');
+    console.log(`DAO: Cart found: ${JSON.stringify(cart)}`);
+    return cart;
+}
 
   async updateCart(cartId, cartData) {
     return await Cart.findByIdAndUpdate(cartId, cartData, { new: true });
@@ -55,6 +58,10 @@ class CartDAO {
   async deleteCart(cartId) {
     return await Cart.findByIdAndDelete(cartId);
   }
+  async getCartByUserId(userId) {
+    return await Cart.findOne({ user: userId }).populate('products.product');
+}
+
 }
 
 

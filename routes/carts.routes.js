@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const {
     getAllCarts,
-    getCartById,
     createCart,
     deleteCart,
     updateCart,
     populateCartProducts,
     addProductsToCart,
-    purchaseCart
+    purchaseCart,getCartById
 } = require('../controllers/carts.controllers');
 const authorizeRole = require('../middleware/authorize');
 
@@ -23,10 +22,10 @@ router.get('/finalizarcompra', (req, res) => {
 
 // Rutas de carritos
 router.get('/carts', getAllCarts);
-router.get('/carts/:cid', getCartById);
 router.post('/carts', createCart);
 router.delete('/carts/:cid', deleteCart);
 router.put('/carts/:cid', updateCart);
 router.get('/carts/:cid/populate', populateCartProducts);
 router.post('/:cid/purchase', purchaseCart);
+router.get('/carts/:cid', getCartById);
 module.exports = router;

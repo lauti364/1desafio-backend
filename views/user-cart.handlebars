@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finalizar Compra</title>
+    <title>Carrito de Compra</title>
 </head>
 <body>
-    <h1>Carrito de Compra</h1>
+    <h1>Productos en tu Carrito</h1>
     <ul>
         {{#each cart.products}}
         <li>
-            <h3>{{this.producto.nombre}}</h3>
-            <p>Precio: {{this.producto.precio}}</p>
-            <p>Cantidad: {{this.cantidad}}</p>
+            <h3>{{this.product.nombre}}</h3>
+            <p>Precio: {{this.product.precio}}</p>
+            <p>Cantidad: {{this.quantity}}</p>
             <form action="/api/carts/{{../cart._id}}/purchase" method="POST">
-                <input type="hidden" name="product_id" value="{{this.producto._id}}">
-                <input type="hidden" name="quantity" value="{{this.cantidad}}">
+                <input type="hidden" name="product_id" value="{{this.product._id}}">
+                <input type="hidden" name="quantity" value="{{this.quantity}}">
                 <button type="submit">Comprar</button>
             </form>
         </li>

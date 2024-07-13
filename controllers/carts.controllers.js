@@ -1,9 +1,5 @@
-
-const { Cart} = require('../dao/models/cart.model');
-const { Producto } = require('../dao/models/products.model');
-const  CartDAO  = require('../dao/carts.dao');
-const {ProductoDAO} = require('../dao/products.dao');
-const createTicket = require('../servicios/ticket.service');
+const CartDAO = require('../dao/carts.dao');
+const Producto = require('../dao/models/products.model'); 
 const getAllCarts = async (req, res) => {
     try {
         const carritos = await Cart.find();
@@ -11,23 +7,6 @@ const getAllCarts = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Error interno del servidor');
-    }
-};
-
-// Obtener un carrito por ID
-const getCartById = async (req, res) => {
-    try {
-        const cartId = req.params.cid;
-        const cart = await CartDAO.getCartById(cartId);
-
-        if (!cart) {
-            return res.status(404).json({ message: 'Carrito no encontrado' });
-        }
-
-        res.render('cart', { cart });
-    } catch (error) {
-        console.error('Error al obtener el carrito:', error);
-        res.status(500).json({ message: 'Error al obtener el carrito', error: error.message || 'Unknown error' });
     }
 };
 
@@ -121,19 +100,18 @@ const addProductsToCart = async (req, res) => {
     const { productId, quantity } = req.body;
 
     try {
-        // Llama al método addToCart de CartDAO para agregar productos al carrito
         const updatedCart = await CartDAO.addToCart(cartId, productId, quantity);
 
-        // Actualiza el carrito en la sesión del usuario
         req.session.user.cart = updatedCart._id;
 
         // Redirige a ver el carrito
-        res.redirect('/cart-checkout');
+        res.redirect('/api/mi-carrito');
     } catch (error) {
         console.error('Error al agregar productos al carrito:', error);
         res.status(500).send('Error al agregar productos al carrito');
     }
 };
+
 
 // Finalizar la compra y generar un ticket
 const purchaseCart = async (req, res) => {
@@ -198,12 +176,29 @@ function calculateTotalAmount(products) {
     });
     return total;
 }
+const getCartById = async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        console.log(`Fetching cart with ID: ${cartId}`);
+        const cart = await CartDAO.getCartById(cartId);
+
+        if (!cart) {
+            console.log(`Cart with ID ${cartId} not found`);
+            return res.status(404).json({ message: 'Carrito no encontrado' });
+        }
+
+        console.log(`Cart found: ${JSON.stringify(cart)}`);
+        res.render('cart', { cart });
+    } catch (error) {
+        console.error('Error al obtener el carrito:', error);
+        res.status(500).json({ message: 'Error al obtener el carrito', error: error.message || 'Unknown error' });
+    }
+};
 
 module.exports = {
     getAllCarts,
-    getCartById,
     createCart,
     deleteCart,
     updateCart,
-    populateCartProducts,addProductsToCart,purchaseCart
+    populateCartProducts,addProductsToCart,purchaseCart,getCartById
 };

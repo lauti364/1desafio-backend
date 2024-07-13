@@ -31,6 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'estilos')));
 
 
 // Configuración de sesiones
@@ -40,7 +41,7 @@ app.use(session({
     saveUninitialized: true,
     store: MongoStore.create({
         mongoUrl: MONGO_URL,
-        ttl: 14 * 24 * 60 * 60, // Tiempo de vida de la sesión en segundos (14 días)
+        ttl: 14 * 24 * 60 * 60, 
     }),
 }));
 
@@ -67,7 +68,7 @@ app.use('/api', userRouter);
 app.use('/api', cartRouter,); 
 app.use('/api', productsRouter); 
 
-// Ruta principal
+// Ruta principals
 app.get('/', (req, res) => {
     res.render('chat');
 });
