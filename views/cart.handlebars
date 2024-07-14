@@ -1,25 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Cart</title>
-</head>
-<body>
-    <div class="cart-container">
-        <h1>My Cart</h1>
-        {{#if cart.products.length}}
-            <ul>
-                {{#each cart.products}}
-                    <li class="product-item">
-                        <h3>{{this.product.nombre}}</h3>
-                        <p>Precio: {{this.product.precio}}</p>
-                        <p>Cantidad: {{this.quantity}}</p>
-                    </li>
-                {{/each}}
-            </ul>
-        {{else}}
-            <p>Your cart is empty.</p>
-        {{/if}}
-    </div>
-</body>
-</html>
+<h1>Productos en el Carrito</h1>
+<ul>
+  {{#each carts}}
+    {{#if this.product}}
+      <li>
+        <strong>ID del Producto:</strong> {{this.product._id}} <br>
+        <strong>Cantidad:</strong> {{this.quantity}} <br>
+      </li>
+    {{/if}}
+  {{/each}}
+</ul>
