@@ -188,12 +188,16 @@ const getCartById = async (req, res) => {
         }
 
         console.log(`Cart found: ${JSON.stringify(cart)}`);
-        res.render('cart', { cart });
+
+        const plainCart = cart.toObject();
+        
+        res.render('cart', { cart: plainCart });
     } catch (error) {
         console.error('Error al obtener el carrito:', error);
         res.status(500).json({ message: 'Error al obtener el carrito', error: error.message || 'Unknown error' });
     }
 };
+
 module.exports = {
     getAllCarts,
     createCart,
