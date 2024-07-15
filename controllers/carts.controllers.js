@@ -105,7 +105,7 @@ const addProductsToCart = async (req, res) => {
         req.session.user.cart = updatedCart._id;
 
         // Redirige a ver el carrito
-        res.redirect('/api/mi-carrito');
+        res.redirect(`/api/carts/${updatedCart._id}`);
     } catch (error) {
         console.error('Error al agregar productos al carrito:', error);
         res.status(500).send('Error al agregar productos al carrito');
@@ -194,7 +194,6 @@ const getCartById = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener el carrito', error: error.message || 'Unknown error' });
     }
 };
-
 module.exports = {
     getAllCarts,
     createCart,

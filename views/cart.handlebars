@@ -1,11 +1,16 @@
-<h1>Productos en el Carrito</h1>
-<ul>
-  {{#each carts}}
-    {{#if this.product}}
-      <li>
-        <strong>ID del Producto:</strong> {{this.product._id}} <br>
-        <strong>Cantidad:</strong> {{this.quantity}} <br>
-      </li>
-    {{/if}}
-  {{/each}}
-</ul>
+<body>
+    <h1>Carrito de Compras</h1>
+    <h2>Productos en el carrito:</h2>
+    {{#each cart.products}}
+        <div class="cart-item">
+            <h3>Producto: {{this.product.nombre}}</h3>
+            <p>Cantidad en el carrito: {{this.quantity}}</p>
+            <div class="product-details">
+                <p>Descripción: {{this.product.descripcion}}</p>
+                <p>Precio: ${{this.producto.precio}}</p>
+                <p>Stock disponible: {{this.product.stock}}</p>
+            </div>
+        </div>
+    {{/each}}
+</body>
+</html>
