@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Carrito de Compras</title>
-    <link rel="stylesheet" href="/estilos/cart.css">
 </head>
 <body>
     <h1>Carrito de Compras</h1>
@@ -19,5 +18,26 @@
             </div>
         </div>
     {{/each}}
+    <button onclick="finalizePurchase()">Finalizar Compra</button>
+
+    <script>
+        async function finalizePurchase() {
+            try {
+                const response = await fetch(`/api/carts/{{cart._id}}/purchase`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Compra finalizada exitosamente');
+                } else {
+                    alert('Algunos productos no pudieron comprarse: ' + result.notPurchasedProducts.join(', '));
+                }
+                location.reload();
+            } catch (error) {
+                console.error('Error al finalizar la compra:', error);
+                alert('Error al finalizar la compra');
+            }
+        }
+    </script>
 </body>
 </html>

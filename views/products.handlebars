@@ -27,6 +27,7 @@
   <input type="hidden" name="productId" value="{{this._id}}">
   <input type="number" name="quantity" value="1" min="1" max="{{this.stock}}">
   <button type="submit">Añadir al carrito</button>
+  <a href="/api/carts/{{../user.cart}}" class="btn btn-primary">ir al carrito</a>
 </form>
 
       </li>

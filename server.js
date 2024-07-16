@@ -14,7 +14,7 @@ const sessionRoutes = require('./routes/api/session.routes');
 const viewRoutes = require('./routes/views.users');
 const initializePassport = require('./config/passport.config');
 const authorizeRole = require('./middleware/authorize');
-
+const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const MONGO_URL = process.env.MONGO_URL;

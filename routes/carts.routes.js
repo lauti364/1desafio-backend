@@ -13,12 +13,9 @@ const authorizeRole = require('../middleware/authorize');
 
 // agregar producto al caart del usuario
 router.post('/carts/:cartId/add-product/:productId', authorizeRole(['usuario']), addProductsToCart);
+// finalizar la compra
+router.post('/carts/:cid/purchase', authorizeRole(['usuario']), purchaseCart);
 
-
-//finañizar compra
-router.get('/finalizarcompra', (req, res) => {
-    res.render('cart-checkout', { title: 'finalizar compra' });
-});
 
 // Rutas de carritos
 router.get('/carts', getAllCarts);

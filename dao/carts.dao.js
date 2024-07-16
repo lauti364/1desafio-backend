@@ -31,7 +31,7 @@ class CartDAO {
 
       console.log('Cart products after adding:', cart.products);
 
-      await product.save(); // Decrementar el stock del producto
+      await product.save();
       return await cart.save();
     } catch (error) {
       console.error('Error al agregar productos al carrito:', error);
@@ -61,8 +61,56 @@ class CartDAO {
   async getCartByUserId(userId) {
     return await Cart.findOne({ user: userId }).populate('products.product');
 }
+async purchaseCart(cartId) {
+  try {
+      const cart = await this.getCartById(cartId);
+      if (!cart) {
+          throw new Error(`Carrito no encontrado para ID ${cartId}`);
+      }
 
+      let totalAmount = 0;
+      const failedProducts = [];
+
+      for (const item of cart.products) {
+          const product = await Producto.findById(item.product._id);
+          if (!product) {
+              throw new Error(`Producto no encontrado para ID ${item.product._id}`);
+          }
+
+          if (product.stock >= item.quantity) {
+              product.stock -= item.quantity;
+              totalAmount += product.precio * item.quantity;
+              await product.save();
+          } else {
+              failedProducts.push(item.product._id);
+          }
+      }
+
+      const purchasedProducts = cart.products.filter(item => !failedProducts.includes(item.product._id));
+      cart.products = purchasedProducts;
+
+      await this.saveCart(cart);
+
+      if (failedProducts.length > 0) {
+          return { notPurchasedProducts: failedProducts };
+      } else {
+          return { message: 'Compra finalizada exitosamente' };
+      }
+  } catch (error) {
+      console.error('Error al finalizar la compra:', error);
+      throw error;
+  }
 }
+
+async saveCart(cart) {
+  return await cart.save();
+}
+
+async saveTicket(ticket) {
+  return await ticket.save();
+}
+}
+
 
 
 module.exports = new CartDAO();

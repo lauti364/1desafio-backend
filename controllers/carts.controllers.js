@@ -1,5 +1,7 @@
 const CartDAO = require('../dao/carts.dao');
 const Producto = require('../dao/models/products.model'); 
+const Cart = require('../dao/models/cart.model');
+const { createTicket } = require('../servicios/ticket.service'); 
 const getAllCarts = async (req, res) => {
     try {
         const carritos = await Cart.find();
@@ -115,60 +117,84 @@ const addProductsToCart = async (req, res) => {
 
 //hace el ticekt de la compra final
 const purchaseCart = async (req, res) => {
+    const { cid } = req.params;
+
     try {
-        const { cid } = req.params;
+        console.log(`Intentando finalizar compra para carrito con ID: ${cid}`);
+
+        // Busca el carrito por su ID y poblamos los productos asociados
         const cart = await Cart.findById(cid).populate('products.product');
 
+        console.log('Carrito encontrado:', cart);
+
         if (!cart) {
+            console.log(`Carrito no encontrado para ID ${cid}`);
             return res.status(404).json({ error: 'Carrito no encontrado' });
         }
 
-        const productsToPurchase = cart.products;
+        let totalAmount = 0;
         const productsNotPurchased = [];
 
-        for (let i = 0; i < productsToPurchase.length; i++) {
-            const cartProduct = productsToPurchase[i];
-            const product = cartProduct.product;
-            const quantityToPurchase = cartProduct.quantity;
+        // Itera sobre los productos en el carrito
+        for (let cartProduct of cart.products) {
+            const product = await Producto.findById(cartProduct.product._id);
 
-            // es el que se encarga de veridficar si hay stock
-            if (product.stock >= quantityToPurchase) {
-                product.stock -= quantityToPurchase;
+            console.log(`Procesando producto: ${product.nombre}`);
+
+            if (!product) {
+                console.log(`Producto no encontrado para ID ${cartProduct.product._id}`);
+                throw new Error(`Producto no encontrado para ID ${cartProduct.product._id}`);
+            }
+
+            // Verifica si hay suficiente stock para realizar la compra
+            if (product.stock >= cartProduct.quantity) {
+                // Actualiza el stock del producto
+                product.stock -= cartProduct.quantity;
                 await product.save();
 
+                // Calcula el monto total de la compra
+                totalAmount += product.precio * cartProduct.quantity;
                 cartProduct.purchased = true;
             } else {
-                productsNotPurchased.push(product._id);
+                // Registra los productos que no se pudieron comprar por falta de stock
+                productsNotPurchased.push(cartProduct.product._id.toString());
             }
         }
 
-        const purchasedProducts = productsToPurchase.filter(product => product.purchased);
-        const notPurchasedProductIds = productsNotPurchased.map(id => id.toString());
-
-        // actualiza el cart
-        cart.products = purchasedProducts;
+        // Filtra los productos comprados y actualiza el carrito
+        cart.products = cart.products.filter(product => product.purchased);
         await cart.save();
 
-        // hace el ticket relacionado al model
+        // Genera el ticket de compra
         const ticketData = {
             code: generateUniqueCode(),
             purchase_datetime: new Date(),
-            amount: calculateTotalAmount(purchasedProducts),
-            purchaser: req.user.email,
+            amount: totalAmount,
         };
 
-        const newTicket = await TicketService.createTicket(ticketData);
+        console.log('Generando ticket de compra:', ticketData);
 
-        if (notPurchasedProductIds.length > 0) {
-            return res.status(400).json({ notPurchasedProducts: notPurchasedProductIds });
+        // Crea el ticket y obtiene el resultado
+        const newTicket = await createTicket(ticketData);
+        
+
+        
+        // Si hay productos que no se pudieron comprar, retorna un error
+        if (productsNotPurchased.length > 0) {
+            console.log('Algunos productos no pudieron comprarse:', productsNotPurchased);
+            return res.status(400).json({ notPurchasedProducts: productsNotPurchased });
         }
 
+        // Finaliza la compra exitosamente
+        console.log('Compra realizada correctamente');
         res.status(200).json({ message: 'Compra realizada correctamente', ticket: newTicket });
     } catch (error) {
         console.error('Error al finalizar la compra:', error);
         res.status(500).json({ error: 'Error interno del servidor al finalizar la compra' });
     }
 };
+
+
 
 // hace un * entre quantity y precio
 const calculateTotalAmount = (products) => {
@@ -179,6 +205,11 @@ const calculateTotalAmount = (products) => {
 const generateUniqueCode = () => {
     return Math.random().toString(36).substr(2, 9).toUpperCase();
 };
+
+
+
+
+
 const getCartById = async (req, res) => {
     try {
         const cartId = req.params.cid;
