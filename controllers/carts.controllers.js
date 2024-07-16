@@ -113,7 +113,7 @@ const addProductsToCart = async (req, res) => {
 };
 
 
-// Finalizar la compra y generar un ticket
+//hace el ticekt de la compra final
 const purchaseCart = async (req, res) => {
     try {
         const { cid } = req.params;
@@ -131,7 +131,7 @@ const purchaseCart = async (req, res) => {
             const product = cartProduct.product;
             const quantityToPurchase = cartProduct.quantity;
 
-            // Verifica si tiene la cantidad de stock necesaria, si la tiene actualiza el stock
+            // es el que se encarga de veridficar si hay stock
             if (product.stock >= quantityToPurchase) {
                 product.stock -= quantityToPurchase;
                 await product.save();
@@ -145,12 +145,14 @@ const purchaseCart = async (req, res) => {
         const purchasedProducts = productsToPurchase.filter(product => product.purchased);
         const notPurchasedProductIds = productsNotPurchased.map(id => id.toString());
 
-        // Actualiza el carrito con los productos comprados
+        // actualiza el cart
         cart.products = purchasedProducts;
         await cart.save();
 
-        // Crea un ticket con lo que se compró
+        // hace el ticket relacionado al model
         const ticketData = {
+            code: generateUniqueCode(),
+            purchase_datetime: new Date(),
             amount: calculateTotalAmount(purchasedProducts),
             purchaser: req.user.email,
         };
@@ -168,14 +170,15 @@ const purchaseCart = async (req, res) => {
     }
 };
 
-// Calcular el monto total de la compra
-function calculateTotalAmount(products) {
-    let total = 0;
-    products.forEach(product => {
-        total += product.product.precio * product.quantity;
-    });
-    return total;
-}
+// hace un * entre quantity y precio
+const calculateTotalAmount = (products) => {
+    return products.reduce((total, product) => total + product.product.precio * product.quantity, 0);
+};
+
+// le asigne un codigo unico a cada ticket
+const generateUniqueCode = () => {
+    return Math.random().toString(36).substr(2, 9).toUpperCase();
+};
 const getCartById = async (req, res) => {
     try {
         const cartId = req.params.cid;

@@ -11,8 +11,8 @@ const {
 } = require('../controllers/carts.controllers');
 const authorizeRole = require('../middleware/authorize');
 
-// agregar producto al caart del usuario(pendiente)
-router.post('/carts/:cartId/add-product/:productId', addProductsToCart);
+// agregar producto al caart del usuario
+router.post('/carts/:cartId/add-product/:productId', authorizeRole(['usuario']), addProductsToCart);
 
 
 //finañizar compra
@@ -26,6 +26,6 @@ router.post('/carts', createCart);
 router.delete('/carts/:cid', deleteCart);
 router.put('/carts/:cid', updateCart);
 router.get('/carts/:cid/populate', populateCartProducts);
-router.post('/:cid/purchase', purchaseCart);
+router.post('/carts/:cid/purchase', purchaseCart);
 router.get('/carts/:cid', getCartById);
 module.exports = router;
