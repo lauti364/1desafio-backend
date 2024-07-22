@@ -3,17 +3,22 @@ const router = express.Router();
 const { getAllProducts, getProductById, createProduct,} = require('../controllers/products.controllers');
 const authorizeRole = require('../middleware/authorize');
 const Producto = require('../dao/models/products.model');
-
-// Obtiene todos los productos
+const { generateMockProducts } = require('../mocking')
+const { CustomError, ERROR_productos,  } = require('../util/errores');
+// obtiene todos los productos
 router.get('/products', getAllProducts);
 
-// Vista para un producto específico
+// vista de un producto específico
 router.get('/products/:id', getProductById);
 
-// Crea un nuevo producto
+// crea un nuevo producto
 router.post('/products', authorizeRole('admin'), createProduct);
 
-
+ // desafio de mocking
+router.get('/mockingproducts', (req, res) => {
+    const products = generateMockProducts();
+    res.json(products);
+});
 
 // Admin
 

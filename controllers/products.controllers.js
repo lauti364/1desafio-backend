@@ -1,5 +1,5 @@
 const Producto = require('../dao/models/products.model'); 
-
+const { CustomError, ERROR_productos, ERROR_products,  } = require('../util/errores');
 const getAllProducts = async (req, res) => {
     try {
         let { limit = 10, page = 1, sort = '', query = '' } = req.query;
@@ -56,12 +56,17 @@ const getProductById = async (req, res) => {
     }
 };
 
-const createProduct = async (req, res) => {
+const createProduct = async (req, res, next) => {
     try {
         console.log('Datos recibidos:', req.body);
         const { nombre, precio, descripcion, stock } = req.body;
 
-        // busca el producto por el nombre y si existe lo borra
+        //se asegura que el admin complete todo
+        if (!nombre || !precio || !descripcion || !stock) {
+            throw new CustomError(ERROR_products.no_se_puede_crear,);
+        }
+
+        //si ya eexiste el producto lo busca y lo borra
         const existingProduct = await Producto.findOne({ nombre });
         if (existingProduct) {
             await Producto.findByIdAndDelete(existingProduct._id);
@@ -69,19 +74,21 @@ const createProduct = async (req, res) => {
             return res.status(200).send('Producto eliminado correctamente');
         }
 
-        // si no existe otro igual crea uno nuevo
+        //si no hay otro igual lo crea
         const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
         await nuevoProducto.save();
-        
+
         res.status(200).send('Producto agregado correctamente');
     } catch (error) {
+        if (error instanceof CustomError) {
+            return next(error);
+        }
+
         console.error(error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Error interno del servidor'
-        });
+        next(new CustomError(ERROR_products.no_se_puede_crear, 'Error al crear el producto'));
     }
 };
+
 
 module.exports = {
     getAllProducts,

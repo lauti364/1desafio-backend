@@ -59,7 +59,14 @@ app.use((req, res, next) => {
     res.locals.user = req.user; 
     next();
 });
+//nuevo manejo de errores
+app.use((err, req, res, next) => {
+    if (err instanceof CustomError) {
+        return res.status(400).json({ code: err.code, message: err.message });
+    }
 
+    res.status(500).json({ message: 'error interno' });
+});
 
 // Rutas
 app.use('/api/session', sessionRoutes);
