@@ -1,5 +1,6 @@
 const Producto = require('../dao/models/products.model'); 
 const { CustomError, ERROR_productos, ERROR_products,  } = require('../util/errores');
+const logger = require('../util/logger.js');
 const getAllProducts = async (req, res) => {
     try {
         let { limit = 10, page = 1, sort = '', query = '' } = req.query;
@@ -58,7 +59,7 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res, next) => {
     try {
-        console.log('Datos recibidos:', req.body);
+        logger.info('Datos recibidos:', req.body);
         const { nombre, precio, descripcion, stock } = req.body;
 
         //se asegura que el admin complete todo
@@ -70,7 +71,7 @@ const createProduct = async (req, res, next) => {
         const existingProduct = await Producto.findOne({ nombre });
         if (existingProduct) {
             await Producto.findByIdAndDelete(existingProduct._id);
-            console.log(`Producto "${nombre}" existente eliminado.`);
+            logger,info(`Producto "${nombre}" existente eliminado.`);
             return res.status(200).send('Producto eliminado correctamente');
         }
 

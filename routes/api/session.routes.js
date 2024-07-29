@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../../dao/models/usuarios.model');
 const { createHash, isValidPassword } = require('../../utils.js');
 const authorizeRole = require('../../middleware/authorize');
+const logger = require('../../util/logger.js');
 // Ruta de registro
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;

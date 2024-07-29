@@ -15,6 +15,7 @@ const viewRoutes = require('./routes/views.users');
 const initializePassport = require('./config/passport.config');
 const authorizeRole = require('./middleware/authorize');
 const nodemailer = require('nodemailer');
+const logger = require('./util/logger');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const MONGO_URL = process.env.MONGO_URL;
@@ -79,8 +80,11 @@ app.use('/api', productsRouter);
 app.get('/', (req, res) => {
     res.render('chat');
 });
-
-
+// logger de urls para solicitudis http
+app.use((req, res, next) => {
+    logger.http(`${req.method} ${req.url}`);
+    next();
+});
 
 // Manejador para rutas no encontradas
 app.use((req, res) => {
@@ -92,12 +96,12 @@ mongoose.connect(MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
-    console.log('Conectado a la base de datos');
+    logger.info('Conectado a la base de datos');
 }).catch(error => {
-    console.error('Error en la conexión a la base de datos:', error);
+    logger.error('Error en la conexión a la base de datos:', error);
 });
 
 // Iniciar el servidor
 app.listen(PORT, () => {
-    console.log(`Servidor Express escuchando en el puerto ${PORT}`);
+    logger.info(`Server running on port ${PORT}`);
 });

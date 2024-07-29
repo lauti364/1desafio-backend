@@ -1,6 +1,6 @@
 const Cart = require('./models/cart.model');
 const Producto = require('./models/products.model');
-
+const logger = require('../util/logger.js');
 class CartDAO {
   async addToCart(cartId, productId, quantity) {
     try {
@@ -18,8 +18,8 @@ class CartDAO {
         throw new Error('No hay suficiente stock disponible');
       }
 
-      console.log('Cart products before adding:', cart.products);
-      console.log('Product ID to add:', productId);
+      logger.info('Cart products before adding:', cart.products);
+      logger.info('Product ID to add:', productId);
 
       const existingProductIndex = cart.products.findIndex(item => item.product && item.product.equals(productId));
 
@@ -29,7 +29,7 @@ class CartDAO {
         cart.products.push({ product: productId, quantity: Number(quantity) });
     }
 
-      console.log('Cart products after adding:', cart.products);
+      logger.info('Cart products after adding:', cart.products);
 
       await product.save();
       return await cart.save();
@@ -45,9 +45,9 @@ class CartDAO {
   }
 
   async getCartById(cartId) {
-    console.log(`DAO: Fetching cart by ID: ${cartId}`);
+    logger.info(`DAO: Fetching cart by ID: ${cartId}`);
     const cart = await Cart.findById(cartId).populate('user').populate('products.product');
-    console.log(`DAO: Cart found: ${JSON.stringify(cart)}`);
+    logger.info(`DAO: Cart found: ${JSON.stringify(cart)}`);
     return cart;
 }
 

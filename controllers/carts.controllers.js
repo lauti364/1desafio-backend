@@ -2,6 +2,7 @@ const CartDAO = require('../dao/carts.dao');
 const Producto = require('../dao/models/products.model'); 
 const Cart = require('../dao/models/cart.model');
 const { createTicket } = require('../servicios/ticket.service'); 
+const logger = require('../util/logger');
 const getAllCarts = async (req, res) => {
     try {
         const carritos = await Cart.find();
@@ -120,15 +121,15 @@ const purchaseCart = async (req, res) => {
     const { cid } = req.params;
 
     try {
-        console.log(`Intentando finalizar compra para carrito con ID: ${cid}`);
+        logger.info(`Intentando finalizar compra para carrito con ID: ${cid}`);
 
         // Busca el carrito por su ID y poblamos los productos asociados
         const cart = await Cart.findById(cid).populate('products.product');
 
-        console.log('Carrito encontrado:', cart);
+        logger.info('Carrito encontrado:', cart);
 
         if (!cart) {
-            console.log(`Carrito no encontrado para ID ${cid}`);
+            logger.error(`Carrito no encontrado para ID ${cid}`);
             return res.status(404).json({ error: 'Carrito no encontrado' });
         }
 
@@ -139,10 +140,10 @@ const purchaseCart = async (req, res) => {
         for (let cartProduct of cart.products) {
             const product = await Producto.findById(cartProduct.product._id);
 
-            console.log(`Procesando producto: ${product.nombre}`);
+            logger.info(`Procesando producto: ${product.nombre}`);
 
             if (!product) {
-                console.log(`Producto no encontrado para ID ${cartProduct.product._id}`);
+                logger.error(`Producto no encontrado para ID ${cartProduct.product._id}`);
                 throw new Error(`Producto no encontrado para ID ${cartProduct.product._id}`);
             }
 
@@ -172,7 +173,7 @@ const purchaseCart = async (req, res) => {
             amount: totalAmount,
         };
 
-        console.log('Generando ticket de compra:', ticketData);
+        logger.info('Generando ticket de compra:', ticketData);
 
         // Crea el ticket y obtiene el resultado
         const newTicket = await createTicket(ticketData);
@@ -181,12 +182,12 @@ const purchaseCart = async (req, res) => {
         
         // Si hay productos que no se pudieron comprar, retorna un error
         if (productsNotPurchased.length > 0) {
-            console.log('Algunos productos no pudieron comprarse:', productsNotPurchased);
+            logger.info('Algunos productos no pudieron comprarse:', productsNotPurchased);
             return res.status(400).json({ notPurchasedProducts: productsNotPurchased });
         }
 
         // Finaliza la compra exitosamente
-        console.log('Compra realizada correctamente');
+        logger.info('Compra realizada correctamente');
         res.status(200).json({ message: 'Compra realizada correctamente', ticket: newTicket });
     } catch (error) {
         console.error('Error al finalizar la compra:', error);
@@ -213,15 +214,15 @@ const generateUniqueCode = () => {
 const getCartById = async (req, res) => {
     try {
         const cartId = req.params.cid;
-        console.log(`Fetching cart with ID: ${cartId}`);
+        logger.info(`Fetching cart with ID: ${cartId}`);
         const cart = await CartDAO.getCartById(cartId);
 
         if (!cart) {
-            console.log(`Cart with ID ${cartId} not found`);
+            logger.error(`Cart with ID ${cartId} not found`);
             return res.status(404).json({ message: 'Carrito no encontrado' });
         }
 
-        console.log(`Cart found: ${JSON.stringify(cart)}`);
+        logger.info(`Cart found: ${JSON.stringify(cart)}`);
 
         const plainCart = cart.toObject();
         

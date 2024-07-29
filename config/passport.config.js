@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const GitHubStrategy = require('passport-github2').Strategy;
 const userService = require('../dao/models/usuarios.model.js');
 const { createHash, isValidPassword } = require('../utils.js');
-
+const logger = require('../util/logger.js');
 const initializePassport = () => {
     passport.use('github', new GitHubStrategy({
         clientID: "Iv23lidNVeCVp9cbIiEk",
@@ -36,7 +36,7 @@ const initializePassport = () => {
             try {
                 let user = await userService.findOne({ email: username });
                 if (user) {
-                    console.log("El usuario ya existe");
+                    logger.error("El usuario ya existe");
                     return done(null, false);
                 }
                 const newUser = {
