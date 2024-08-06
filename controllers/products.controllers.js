@@ -71,7 +71,7 @@ const createProduct = async (req, res, next) => {
         const existingProduct = await Producto.findOne({ nombre });
         if (existingProduct) {
             await Producto.findByIdAndDelete(existingProduct._id);
-            logger,info(`Producto "${nombre}" existente eliminado.`);
+            logger.info(`Producto "${nombre}" existente eliminado.`);
             return res.status(200).send('Producto eliminado correctamente');
         }
 

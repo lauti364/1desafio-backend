@@ -4,3 +4,11 @@
 2024-07-29T18:23:01.794Z [fatal]: Fatal log
 2024-07-29T19:34:24.100Z [error]: Error log
 2024-07-29T19:34:24.102Z [fatal]: Fatal log
+2024-08-01T23:34:34.225Z [error]: Error al obtener el carrito: CartDAO.getCartById is not a function
+2024-08-01T23:34:37.680Z [error]: Error al obtener el carrito: CartDAO.getCartById is not a function
+2024-08-06T21:13:20.812Z [error]: Error al enviar el correo: self-signed certificate in certificate chain
+2024-08-06T21:16:09.863Z [error]: Error al enviar el correo: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-2d1b2b9685dsm40064a91.47 - gsmtp
+2024-08-06T21:30:30.904Z [error]: Error al enviar el correo: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials 41be03b00d2f7-7b764fb50a0sm6158809a12.67 - gsmtp
+2024-08-06T21:51:17.028Z [error]: Error al enviar el correo: resetTokens is not defined
