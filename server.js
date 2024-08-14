@@ -1,4 +1,5 @@
 require('dotenv').config();
+const swaggerDocs = require('./swagger');
 const express = require('express');
 const session = require('express-session');
 const flash = require('express-flash');
@@ -24,7 +25,7 @@ if (!MONGO_URL) {
     console.error('Error: La variable de entorno MONGO_URL no está definida');
     process.exit(1);
 }
-
+app.use('/', swaggerDocs);
 // Configuración de Handlebars
 app.engine('.handlebars', exphbs.engine);
 app.set('view engine', '.handlebars');
