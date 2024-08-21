@@ -58,7 +58,7 @@ router.post('/api/session/forgot-password', async (req, res) => {
             from: 'lautivp16@gmail.com', 
             to: email, 
             subject: 'Restablecer Contraseña', 
-            text: `Haz clic en el siguiente enlace para restablecer tu contraseña:http://localhost:8080/reset-password/${token}`
+            text: `Haz clic en el siguiente enlace para restablecer tu contraseña:http://localhost:8081/reset-password/${token}`
         };
 
         await transporter.sendMail(mailOptions);

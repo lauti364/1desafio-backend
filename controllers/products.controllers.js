@@ -33,7 +33,14 @@ const getAllProducts = async (req, res) => {
             user: req.session.user
         };
 
-        res.render('products', response);
+        // Verifica si el encabezado 'Accept' es 'application/json'
+        if (req.headers.accept && req.headers.accept.includes('application/json')) {
+            // Responde con JSON para las pruebas y API
+            res.json(response);
+        } else {
+            // Renderiza la vista para las solicitudes HTML
+            res.render('products', response);
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -42,6 +49,9 @@ const getAllProducts = async (req, res) => {
         });
     }
 };
+
+
+
 
 const getProductById = async (req, res) => {
     try {
@@ -69,7 +79,7 @@ const createProduct = async (req, res, next) => {
 
         //si ya eexiste el producto lo busca y lo borra
         const existingProduct = await Producto.findOne({ nombre });
-        if (existingProduct) {
+        if (existingProduct) { 
             await Producto.findByIdAndDelete(existingProduct._id);
             logger.info(`Producto "${nombre}" existente eliminado.`);
             return res.status(200).send('Producto eliminado correctamente');
@@ -79,7 +89,7 @@ const createProduct = async (req, res, next) => {
         const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
         await nuevoProducto.save();
 
-        res.status(200).send('Producto agregado correctamente');
+        res.status(201).send('Producto agregado correctamente');
     } catch (error) {
         if (error instanceof CustomError) {
             return next(error);

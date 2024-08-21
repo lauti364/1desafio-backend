@@ -18,7 +18,7 @@ const authorizeRole = require('./middleware/authorize');
 const nodemailer = require('nodemailer');
 const logger = require('./util/logger');
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8081;
 const MONGO_URL = process.env.MONGO_URL;
 
 if (!MONGO_URL) {
@@ -106,3 +106,6 @@ mongoose.connect(MONGO_URL, {
 app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
 });
+
+
+module.exports = app;
