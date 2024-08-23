@@ -33,7 +33,7 @@ const { CustomError, ERROR_productos } = require('../util/errores');
 
 /**
  * @swagger
- * /products:
+ * /api/products:
  *   get:
  *     summary: Obtiene todos los productos
  *     tags: [Productos]
@@ -51,7 +51,7 @@ router.get('/products', getAllProducts);
 
 /**
  * @swagger
- * /products/{id}:
+ * /api/products/{id}:
  *   get:
  *     summary: Obtiene un producto específico por ID
  *     tags: [Productos]
@@ -76,7 +76,7 @@ router.get('/products/:id', getProductById);
 
 /**
  * @swagger
- * /products:
+ * /api/products:
  *   post:
  *     summary: Crea un nuevo producto (solo administrador)
  *     tags: [Productos]
@@ -96,7 +96,7 @@ router.post('/products', authorizeRole('admin'), createProduct);
 
 /**
  * @swagger
- * /mockingproducts:
+ * /api/mockingproducts:
  *   get:
  *     summary: Obtiene una lista de productos simulados
  *     tags: [Productos]
@@ -117,7 +117,7 @@ router.get('/mockingproducts', (req, res) => {
 
 /**
  * @swagger
- * /create:
+ * /api/create:
  *   get:
  *     summary: Muestra el formulario para crear productos (solo administrador)
  *     tags: [Productos]

@@ -36,7 +36,7 @@ const authorizeRole = require('../middleware/authorize');
 
 /**
  * @swagger
- * /carts:
+ * /api/carts:
  *   get:
  *     summary: Obtiene todos los carritos
  *     tags: [Carritos]
@@ -54,7 +54,7 @@ router.get('/carts', getAllCarts);
 
 /**
  * @swagger
- * /carts:
+ * /api/carts:
  *   post:
  *     summary: Crea un nuevo carrito
  *     tags: [Carritos]
@@ -72,7 +72,7 @@ router.post('/carts', createCart);
 
 /**
  * @swagger
- * /carts/{cid}:
+ * /api/carts/{cid}:
  *   delete:
  *     summary: Elimina un carrito por ID
  *     tags: [Carritos]
@@ -93,7 +93,7 @@ router.delete('/carts/:cid', deleteCart);
 
 /**
  * @swagger
- * /carts/{cid}:
+ * /api/carts/{cid}:
  *   put:
  *     summary: Actualiza un carrito por ID
  *     tags: [Carritos]
@@ -120,7 +120,7 @@ router.put('/carts/:cid', updateCart);
 
 /**
  * @swagger
- * /carts/{cid}/populate:
+ * /api/carts/{cid}/populate:
  *   get:
  *     summary: Llena el carrito con los productos seleccionados
  *     tags: [Carritos]
@@ -141,7 +141,7 @@ router.get('/carts/:cid/populate', populateCartProducts);
 
 /**
  * @swagger
- * /carts/{cartId}/add-product/{productId}:
+ * /api/carts/{cartId}/add-product/{productId}:
  *   post:
  *     summary: Agrega un producto al carrito del usuario
  *     tags: [Carritos]
@@ -168,7 +168,7 @@ router.post('/carts/:cartId/add-product/:productId', authorizeRole(['usuario']),
 
 /**
  * @swagger
- * /carts/{cid}/purchase:
+ * /api/carts/{cid}/purchase:
  *   post:
  *     summary: Finaliza la compra del carrito
  *     tags: [Carritos]
@@ -189,7 +189,7 @@ router.post('/carts/:cid/purchase', authorizeRole(['usuario']), purchaseCart);
 
 /**
  * @swagger
- * /carts/{cid}:
+ * /api/carts/{cid}:
  *  get:
  *     summary: Obtiene un carrito específico por ID
  *     tags: [Carritos]
