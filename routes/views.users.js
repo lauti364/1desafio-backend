@@ -7,8 +7,19 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const User = require('../dao/models/usuarios.model');
+const multer = require('multer');
 
 const resetTokens = new Map();
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 router.get('/login', isNotAuthenticated, renderLogin);
 
@@ -58,7 +69,7 @@ router.post('/api/session/forgot-password', async (req, res) => {
             from: 'lautivp16@gmail.com', 
             to: email, 
             subject: 'Restablecer Contraseña', 
-            text: `Haz clic en el siguiente enlace para restablecer tu contraseña:http://localhost:8081/reset-password/${token}`
+            text: `Haz clic en el siguiente enlace para restablecer tu contraseña:http://localhost:8080/reset-password/${token}`
         };
 
         await transporter.sendMail(mailOptions);
@@ -113,6 +124,68 @@ async function updateUserPassword(email, password) {
     await User.updateOne({ email }, { password: hashedPassword });
 }
 
+router.post('/users/admin/:uid', async (req, res) => {
+    try {
+        const { uid } = req.params;
+        const user = await User.findById(uid);
 
+        if (!user) {
+            return res.status(404).send('Usuario no encontrado');
+        }
+
+        const requiredDocuments = ['dni', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+
+        const getFileNameWithoutExtension = (filename) => {
+            return filename.split('.').slice(0, -1).join('.');
+        };
+
+        const uploadedDocuments = user.documents.map(doc => getFileNameWithoutExtension(doc.name));
+
+        const hasUploadedAll = requiredDocuments.every(doc => uploadedDocuments.includes(doc));
+
+        if (!hasUploadedAll) {
+            return res.status(400).json({
+                error: 'Documentación incompleta',
+                message: 'Debe subir todos los documentos requeridos para convertirse en usuario admin',
+                missingDocuments: requiredDocuments.filter(doc => !uploadedDocuments.includes(doc))
+            });
+        }
+
+        user.role = 'admin';
+        await user.save();
+
+        res.status(200).send('Usuario actualizado a admin exitosamente');
+    } catch (error) {
+        console.error('Error al actualizar usuario a admin:', error);
+        res.status(500).send('Error al actualizar usuario a admin');
+    }
+});
+
+//sube los dcimuentos
+router.post('/users/:uid/documents', upload.any(), async (req, res) => {
+    try {
+        const { uid } = req.params;
+        const user = await User.findById(uid);
+
+        if (!user) {
+            return res.status(404).send('Usuario no encontrado');
+        }
+
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).send('No se subieron documentos');
+        }
+
+        req.files.forEach(file => {
+            user.documents.push({ name: file.originalname, reference: file.path });
+        });
+
+        await user.save();
+
+        res.status(200).send('Documentos subidos exitosamente');
+    } catch (error) {
+        console.error('Error al subir documentos:', error);
+        res.status(500).send('Error al subir documentos');
+    }
+});
 
 module.exports = router;

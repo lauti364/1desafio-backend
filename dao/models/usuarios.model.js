@@ -9,7 +9,14 @@ const userSchema = new mongoose.Schema({
     age: { type: Number, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['admin', 'usuario'], default: 'usuario', required: true },
-    cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' }
+    cart: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' },
+    documents: [
+        {
+            name: { type: String, required: true },
+            reference: { type: String, required: true }
+        }
+    ],
+    last_connection: { type: Date }
 });
 
 userSchema.pre('save', async function(next) {
@@ -41,7 +48,10 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
-
-
+// ultima vez en linea
+userSchema.methods.updateLastConnection = async function() {
+    this.last_connection = new Date();
+    await this.save();
+};
 
 module.exports = mongoose.model('User', userSchema);
