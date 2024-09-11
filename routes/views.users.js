@@ -8,6 +8,8 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const User = require('../dao/models/usuarios.model');
 const multer = require('multer');
+const moment = require('moment');
+const authorizeRole = require('../middleware/authorize');
 
 const resetTokens = new Map();
 const storage = multer.diskStorage({
@@ -187,5 +189,94 @@ router.post('/users/:uid/documents', upload.any(), async (req, res) => {
         res.status(500).send('Error al subir documentos');
     }
 });
+
+
+ 
+
+// proytecto final
+
+//1 
+router.get('/datos', async (req, res) => {
+    try {
+        const users = await User.find({}, 'first_name email role');
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+        res.status(500).send('Error al obtener usuarios');
+    }
+});
+
+//2 usuarios inactivos. se le asigna inactiveuser a los usuarios que en x tiempo no entraron
+router.delete('/inactivos', async (req, res) => {
+    try {
+        const twoDaysAgo = moment().subtract(2, 'days').toDate();
+        
+        //busca
+        const inactiveUsers = await User.find({ last_connection: { $lt: twoDaysAgo } });
+
+        //elimina
+        await User.deleteMany({ _id: { $in: inactiveUsers.map(user => user._id) } });
+
+        //nodemailer
+        inactiveUsers.forEach(user => {
+            const mailOptions = {
+                from: 'lautivp16@gmail.com',
+                to: user.email,
+                subject: 'Cuenta eliminada por inactividad',
+                text: `Hola ${user.first_name}, tu cuenta ha sido eliminada debido a inactividad de más de 2 días.`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error al enviar correo:', error);
+                } else {
+                    console.log('Correo enviado:', info.response);
+                }
+            });
+        });
+
+        res.status(200).send('Usuarios inactivos eliminados y correos enviados.');
+    } catch (error) {
+        console.error('Error al eliminar usuarios inactivos:', error);
+        res.status(500).send('Error al eliminar usuarios inactivos');
+    }
+});
+
+
+//3 vistas de admin para users
+router.get('/adusers', authorizeRole('admin'), async (req, res) => {
+    try {
+     const users = await User.find({ role: 'usuario' }).lean();
+        res.render('adminuser', { users });
+    } catch (error) {
+        console.error('Error al obtener usuarios para administración:', error);
+        res.status(500).send('Error al obtener usuarios');
+    }
+});
+
+//cambia el rol
+router.post('/users/:id/role',authorizeRole('admin'), async (req, res) => {
+    const { role } = req.body;
+    try {
+        await User.findByIdAndUpdate(req.params.id, { role });
+        res.status(200).send('Rol actualizado');
+    } catch (error) {
+        console.error('Error al actualizar rol:', error);
+        res.status(500).send('Error al actualizar rol');
+    }
+});
+
+
+// elimina un user
+router.post('/users/:id',authorizeRole('admin'), async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.status(200).send('Usuario eliminado');
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        res.status(500).send('Error al eliminar usuario');
+    }
+});
+
 
 module.exports = router;

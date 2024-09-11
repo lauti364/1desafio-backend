@@ -30,6 +30,8 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(404).send('Usuario no encontrado');
         }
+        // para el enlinea
+        await user.updateLastConnection();
 
         // Obtener el carrito del usuario con sus productos
         const populatedUser = await User.findById(user._id).populate('cart.products.product');
@@ -52,13 +54,23 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Ruta de logout
-router.post('/logout', (req, res) => {
-    req.logout((err) => {
-        if (err) { return next(err); }
-        res.redirect('/login');
-    });
+// logout y actualiza conexion
+router.post('/logout', async (req, res) => { 
+    try {
+        if (req.session.user) {
+            const user = await User.findById(req.session.user.id);
+            await user.updateLastConnection();
+        }
+        req.logout((err) => {
+            if (err) { return next(err); }
+            res.redirect('/login');
+        });
+    } catch (err) {
+        console.error('Error al cerrar sesión:', err);
+        res.status(500).send('Error al cerrar sesión');
+    }
 });
+
 
 // Rutas de GitHub
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
@@ -70,5 +82,10 @@ router.get('/githubcallback',
         res.redirect('/api/products');
     }
 );
+
+
+
+
+
 
 module.exports = router; 

@@ -50,8 +50,7 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 };
 // ultima vez en linea
 userSchema.methods.updateLastConnection = async function() {
-    this.last_connection = new Date();
-    await this.save();
+    await this.updateOne({ last_connection: new Date() });
 };
 
 module.exports = mongoose.model('User', userSchema);

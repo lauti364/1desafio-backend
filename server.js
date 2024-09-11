@@ -20,6 +20,7 @@ const logger = require('./util/logger');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const MONGO_URL = process.env.MONGO_URL;
+const methodOverride = require('method-override');
 
 if (!MONGO_URL) {
     console.error('Error: La variable de entorno MONGO_URL no está definida');
@@ -27,15 +28,15 @@ if (!MONGO_URL) {
 }
 app.use('/', swaggerDocs);
 // Configuración de Handlebars
+
 app.engine('.handlebars', exphbs.engine);
 app.set('view engine', '.handlebars');
 app.set('views', path.join(__dirname, 'views'));
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'estilos')));
 
-
+app.use(methodOverride('_method'));
 // Configuración de sesiones
 app.use(session({
     secret: 'secretkey',
