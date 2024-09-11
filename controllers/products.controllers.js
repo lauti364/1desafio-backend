@@ -70,8 +70,8 @@ const getProductById = async (req, res) => {
 const createProduct = async (req, res, next) => {
     try {
         logger.info('Datos recibidos:', req.body);
+ 
         const { nombre, precio, descripcion, stock } = req.body;
-
         //se asegura que el admin complete todo
         if (!nombre || !precio || !descripcion || !stock) {
             throw new CustomError(ERROR_products.no_se_puede_crear,);
@@ -86,7 +86,7 @@ const createProduct = async (req, res, next) => {
         }
 
         //si no hay otro igual lo crea
-        const nuevoProducto = new Producto({ nombre, precio, descripcion, stock });
+        const nuevoProducto = new Producto({ nombre, precio, descripcion, stock, owner: req.session.user.email });
         await nuevoProducto.save();
 
         res.status(201).send('Producto agregado correctamente');
