@@ -12,3 +12,4 @@
 2024-08-06T21:30:30.904Z [error]: Error al enviar el correo: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
 535 5.7.8  https://support.google.com/mail/?p=BadCredentials 41be03b00d2f7-7b764fb50a0sm6158809a12.67 - gsmtp
 2024-08-06T21:51:17.028Z [error]: Error al enviar el correo: resetTokens is not defined
+2024-09-12T22:03:36.419Z [error]: Error al enviar correo al propietario del producto: Error: self-signed certificate in certificate chain

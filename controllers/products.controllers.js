@@ -1,6 +1,21 @@
 const Producto = require('../dao/models/products.model'); 
 const { CustomError, ERROR_productos, ERROR_products,  } = require('../util/errores');
 const logger = require('../util/logger.js');
+const nodemailer = require('nodemailer');
+const user = require('../dao/models/usuarios.model.js')
+
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: 'lautivp16@gmail.com',  
+        pass: 'nutw zcqi wneu yscg'         
+    }, tls: {
+        rejectUnauthorized: false
+    }
+});
+
+
 const getAllProducts = async (req, res) => {
     try {
         let { limit = 10, page = 1, sort = '', query = '' } = req.query;
@@ -79,11 +94,32 @@ const createProduct = async (req, res, next) => {
 
         //si ya eexiste el producto lo busca y lo borra
         const existingProduct = await Producto.findOne({ nombre });
-        if (existingProduct) { 
+        if (existingProduct) {
+            const ownerEmail = existingProduct.owner;
+
+            if (ownerEmail) {
+                const mailOptions = {
+                    from: 'tu_correo@gmail.com',
+                    to: ownerEmail,
+                    subject: 'Tu producto ha sido eliminado',
+                    text: `Hola, el producto "${existingProduct.nombre}" ha sido eliminado de la web.`
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        logger.error(`Error al enviar correo al propietario del producto: ${error}`);
+                    } else {
+                        logger.info(`Correo enviado al propietario del producto: ${info.response}`);
+                    }
+                });
+            }
+
             await Producto.findByIdAndDelete(existingProduct._id);
             logger.info(`Producto "${nombre}" existente eliminado.`);
             return res.status(200).send('Producto eliminado correctamente');
         }
+
+
 
         //si no hay otro igual lo crea
         const nuevoProducto = new Producto({ nombre, precio, descripcion, stock, owner: req.session.user.email });
