@@ -10,7 +10,7 @@ const isNotAuthenticated = (req, res, next) => {
     if (!req.session.user) {
         return next();
     } else {
-        res.redirect('/current');
+        res.redirect('/api/products');
     }
 };
 

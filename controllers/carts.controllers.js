@@ -1,7 +1,7 @@
 const CartDAO = require('../dao/carts.dao');
 const Producto = require('../dao/models/products.model'); 
 const Cart = require('../dao/models/cart.model');
-const { createTicket } = require('../servicios/ticket.service'); 
+const { createTicket,uniqueCode } = require('../servicios/ticket.service'); 
 const logger = require('../util/logger');
 const getAllCarts = async (req, res) => {
     try {
@@ -42,7 +42,7 @@ const createCart = async (req, res) => {
     }
 };
 
-// Eliminar un carrito por ID
+// eliminar un carrito por ID
 const deleteCart = async (req, res) => {
     try {
         const { cid } = req.params;
@@ -60,7 +60,7 @@ const deleteCart = async (req, res) => {
     }
 };
 
-// Actualizar un carrito por ID
+// actualiza el cart
 const updateCart = async (req, res) => {
     try {
         const { cid } = req.params;
@@ -79,7 +79,6 @@ const updateCart = async (req, res) => {
     }
 };
 
-// Popular productos del carrito
 const populateCartProducts = async (req, res) => {
     try {
         const { cid } = req.params;
@@ -97,7 +96,7 @@ const populateCartProducts = async (req, res) => {
     }
 };
 
-// Añadir productos al carrito
+// añade los productos al cart
 const addProductsToCart = async (req, res) => {
     const { cartId } = req.params;
     const { productId, quantity } = req.body;
@@ -123,7 +122,6 @@ const purchaseCart = async (req, res) => {
     try {
         logger.info(`Intentando finalizar compra para carrito con ID: ${cid}`);
 
-        // Busca el carrito por su ID y poblamos los productos asociados
         const cart = await Cart.findById(cid).populate('products.product');
 
         logger.info('Carrito encontrado:', cart);
@@ -136,7 +134,6 @@ const purchaseCart = async (req, res) => {
         let totalAmount = 0;
         const productsNotPurchased = [];
 
-        // Itera sobre los productos en el carrito
         for (let cartProduct of cart.products) {
             const product = await Producto.findById(cartProduct.product._id);
 
@@ -147,46 +144,41 @@ const purchaseCart = async (req, res) => {
                 throw new Error(`Producto no encontrado para ID ${cartProduct.product._id}`);
             }
 
-            // Verifica si hay suficiente stock para realizar la compra
+            // comprueba si hay stock
             if (product.stock >= cartProduct.quantity) {
-                // Actualiza el stock del producto
+                // modifica el stock
                 product.stock -= cartProduct.quantity;
                 await product.save();
 
-                // Calcula el monto total de la compra
+                // hace un *
                 totalAmount += product.precio * cartProduct.quantity;
                 cartProduct.purchased = true;
             } else {
-                // Registra los productos que no se pudieron comprar por falta de stock
+                // los que no se compran x stock y los saca del cart
                 productsNotPurchased.push(cartProduct.product._id.toString());
             }
         }
 
-        // Filtra los productos comprados y actualiza el carrito
+        // actualiza el cart 
         cart.products = cart.products.filter(product => product.purchased);
         await cart.save();
 
-        // Genera el ticket de compra
         const ticketData = {
-            code: generateUniqueCode(),
             purchase_datetime: new Date(),
             amount: totalAmount,
         };
 
         logger.info('Generando ticket de compra:', ticketData);
 
-        // Crea el ticket y obtiene el resultado
         const newTicket = await createTicket(ticketData);
-        
 
-        
-        // Si hay productos que no se pudieron comprar, retorna un error
+        // retorna los que no se pueden comprar
         if (productsNotPurchased.length > 0) {
             logger.info('Algunos productos no pudieron comprarse:', productsNotPurchased);
             return res.status(400).json({ notPurchasedProducts: productsNotPurchased });
         }
 
-        // Finaliza la compra exitosamente
+        // finaliza la compra
         logger.info('Compra realizada correctamente');
         res.status(200).json({ message: 'Compra realizada correctamente', ticket: newTicket });
     } catch (error) {
@@ -195,21 +187,10 @@ const purchaseCart = async (req, res) => {
     }
 };
 
-
-
 // hace un * entre quantity y precio
 const calculateTotalAmount = (products) => {
     return products.reduce((total, product) => total + product.product.precio * product.quantity, 0);
 };
-
-// le asigne un codigo unico a cada ticket
-const generateUniqueCode = () => {
-    return Math.random().toString(36).substr(2, 9).toUpperCase();
-};
-
-
-
-
 
 const getCartById = async (req, res) => {
     try {

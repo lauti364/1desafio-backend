@@ -47,7 +47,7 @@ router.post('/login', async (req, res) => {
         };
 
         console.log(req.session.user);
-        res.redirect('/current');
+        res.redirect('/api/products');
     } catch (err) {
         console.error(err);
         res.status(500).send('Error al iniciar sesión');

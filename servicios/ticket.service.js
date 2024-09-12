@@ -2,9 +2,15 @@ const Ticket = require('../dao/models/ticket.model');
 
 async function createTicket(ticketData) {
     try {
+        const uniqueCode = `TICKET-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+        if (!uniqueCode || uniqueCode.trim() === '') {
+            throw new Error('Código único no válido');
+        }
+
         const newTicket = new Ticket({
-            code: ticketData.code,
-            purchase_datetime: ticketData.purchase_datetime,
+            code: uniqueCode,
+            purchase_datetime: ticketData.purchase_datetime || new Date(),
             amount: ticketData.amount,
         });
 
@@ -15,7 +21,6 @@ async function createTicket(ticketData) {
         throw new Error('Error al crear el ticket');
     }
 }
-
 module.exports = {
     createTicket,
 };
