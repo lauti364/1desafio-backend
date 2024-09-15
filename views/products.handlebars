@@ -16,8 +16,6 @@
   <h2>
     <p>Hola {{user.first_name}} {{user.last_name}} bienvenido a supermercado fija</p>
   </h2>
-
-  <ul>
     {{#each products}}
       <li>
         <h2>{{this.nombre}}</h2>
@@ -26,7 +24,7 @@
         <p>Stock: {{this.stock}}</p>
        {{#if this.foto}}
   <img src="{{this.foto}}" alt="Foto de {{this.nombre}}" >
-{{/if}}
+  {{/if}}
         
        <form class="add-to-cart-form" action="/api/carts/{{../user.cart}}/add-product/{{this._id}}" method="POST">
   <input type="hidden" name="productId" value="{{this._id}}">

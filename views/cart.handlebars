@@ -11,6 +11,9 @@
     <h2>Productos en el carrito:</h2>
     {{#each cart.products}}
         <div class="cart-item">
+            {{#if this.product.foto}}
+                <img src="{{this.product.foto}}" alt="Foto de {{this.product.nombre}}" class="product-image">
+            {{/if}}
             <h3>Producto: {{this.product.nombre}}</h3>
             <p>Cantidad en el carrito: {{this.quantity}}</p>
             <div class="product-details">
@@ -21,7 +24,7 @@
         </div>
     {{/each}}
     <button onclick="finalizePurchase()">Finalizar Compra</button>
-
+    <p><a href="/api/products">productos</a></p>
     <script>
         async function finalizePurchase() {
             try {

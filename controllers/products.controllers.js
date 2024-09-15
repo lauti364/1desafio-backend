@@ -28,12 +28,15 @@ const upload = multer({ storage: storage });
 
 const getAllProducts = async (req, res) => {
     try {
-        let { limit = 10, page = 1, sort = '', query = '' } = req.query;
+        let  { limit = 10, page = 1, sort = '', query = '', description = '' } = req.query;
 
         limit = parseInt(limit);
         page = parseInt(page);
 
-        const filter = query ? { nombre: new RegExp(query, 'i') } : {};
+        const filter = {
+            ...(query ? { nombre: new RegExp(query, 'i') } : {}),
+            ...(description ? { descripcion: new RegExp(description, 'i') } : {}) 
+        };
         const sortField = sort || '_id';
 
         const totalDocuments = await Producto.countDocuments(filter);
