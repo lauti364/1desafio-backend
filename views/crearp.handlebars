@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>{{title}}</h1>
-    <form action="/api/products" method="POST">
+    <form action="/api/products" method="POST" enctype="multipart/form-data">
         <label for="nombre">Nombre:</label>
         <input type="text" name="nombre" id="nombre" required>
         <br>
@@ -19,6 +19,9 @@
         <br>
         <label for="stock">Stock:</label>
         <input type="number" name="stock" id="stock" required>
+        <br>
+        <label for="foto">Foto:</label>
+        <input type="file" name="foto">
         <br>
         <button type="submit">Crear Producto</button>
     </form>

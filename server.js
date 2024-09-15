@@ -27,6 +27,10 @@ if (!MONGO_URL) {
     process.exit(1);
 }
 app.use('/', swaggerDocs);
+//css
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 // Configuración de Handlebars
 
 app.engine('.handlebars', exphbs.engine);
@@ -34,7 +38,6 @@ app.set('view engine', '.handlebars');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'estilos')));
 
 app.use(methodOverride('_method'));
 // Configuración de sesiones

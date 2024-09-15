@@ -3,7 +3,7 @@ const { CustomError, ERROR_productos, ERROR_products,  } = require('../util/erro
 const logger = require('../util/logger.js');
 const nodemailer = require('nodemailer');
 const user = require('../dao/models/usuarios.model.js')
-
+const multer = require('multer');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail', 
@@ -14,6 +14,16 @@ const transporter = nodemailer.createTransport({
         rejectUnauthorized: false
     }
 });
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/products/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage: storage });
 
 
 const getAllProducts = async (req, res) => {
@@ -118,11 +128,11 @@ const createProduct = async (req, res, next) => {
             logger.info(`Producto "${nombre}" existente eliminado.`);
             return res.status(200).send('Producto eliminado correctamente');
         }
-
+        const fotoUrl = req.file ? `/products/${req.file.filename}` : '';
 
 
         //si no hay otro igual lo crea
-        const nuevoProducto = new Producto({ nombre, precio, descripcion, stock, owner: req.session.user.email });
+        const nuevoProducto = new Producto({ nombre, precio, descripcion, stock, owner: req.session.user.email,foto: fotoUrl });
         await nuevoProducto.save();
 
         res.status(201).send('Producto agregado correctamente');

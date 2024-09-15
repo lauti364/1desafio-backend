@@ -5,14 +5,16 @@
   <title>Productos</title>
    <link rel="stylesheet" href="/estilos/products.css">
 </head>
+<div class="nav-bar">
+<header>
+  <p><a href="/current">perfil</a></p>
+</header>
+</div>
 <body>
 
   <h1>Agregar Productos al Carrito</h1>
   <h2>
-    <p>Nombre: {{user.first_name}} {{user.last_name}}</p>
-    <p>Email: {{user.email}}</p>
-    <p>Edad: {{user.age}}</p>
-    <p>Carrito: {{user.cart}}</p>
+    <p>Hola {{user.first_name}} {{user.last_name}} bienvenido a supermercado fija</p>
   </h2>
 
   <ul>
@@ -22,6 +24,9 @@
         <p>{{this.descripcion}}</p>
         <p>Precio: ${{this.precio}}</p>
         <p>Stock: {{this.stock}}</p>
+       {{#if this.foto}}
+  <img src="{{this.foto}}" alt="Foto de {{this.nombre}}" >
+{{/if}}
         
        <form class="add-to-cart-form" action="/api/carts/{{../user.cart}}/add-product/{{this._id}}" method="POST">
   <input type="hidden" name="productId" value="{{this._id}}">

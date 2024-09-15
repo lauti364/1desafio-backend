@@ -1,0 +1,54 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Profile container */
+  .profile-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Header style */
+  h2 {
+    text-align: center;
+    color: #ff6347; /* Red color for the title */
+    margin-top: 0;
+  }
+  
+  /* User info styles */
+  p {
+    font-size: 1em;
+    margin: 10px 0;
+  }
+  
+  p span {
+    font-weight: bold;
+  }
+  
+  /* Logout button */
+  button {
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    display: block;
+    margin: 20px auto;
+  }
+  
+  button:hover {
+    background-color: #e5533d;
+  }
+  

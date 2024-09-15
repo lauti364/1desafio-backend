@@ -5,6 +5,20 @@ const authorizeRole = require('../middleware/authorize');
 const Producto = require('../dao/models/products.model');
 const { generateMockProducts } = require('../mocking');
 const { CustomError, ERROR_productos } = require('../util/errores');
+const multer = require('multer');
+// multer para subir foto de los products
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/products/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage: storage });
+
+
+
 
 /**
  * @swagger
@@ -74,6 +88,11 @@ router.get('/products', getAllProducts);
  */
 router.get('/products/:id', getProductById);
 
+
+
+
+
+
 /**
  * @swagger
  * /api/products:
@@ -92,7 +111,7 @@ router.get('/products/:id', getProductById);
  *       403:
  *         description: No autorizado
  */
-router.post('/products', authorizeRole('admin'), createProduct);
+router.post('/products', authorizeRole('admin'),upload.single('foto'), createProduct);
 
 /**
  * @swagger
