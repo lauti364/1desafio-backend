@@ -1,4 +1,4 @@
-/* General styles */
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -6,11 +6,10 @@ body {
     margin: 0;
     padding: 0;
   }
-  
-  /* Header styles */
+
   h1 {
     text-align: center;
-    color: #ff6347; /* Red color for the main title */
+    color: #ff6347; 
     margin-top: 20px;
   }
   
@@ -20,7 +19,7 @@ body {
     margin: 20px 0;
   }
   
-  /* Cart item styles */
+
   .cart-item {
     background-color: #fff;
     border: 1px solid #ddd;

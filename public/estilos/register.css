@@ -1,4 +1,4 @@
-/* General styles */
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -11,7 +11,7 @@ body {
     height: 100vh;
   }
   
-  /* Form container */
+ 
   form {
     background-color: #fff;
     border: 1px solid #ddd;
@@ -23,14 +23,14 @@ body {
     margin: 20px;
   }
   
-  /* Form title */
+
   h2 {
     text-align: center;
-    color: #ff6347; /* Red color for the title */
+    color: #ff6347;
     margin-top: 0;
   }
   
-  /* Form labels */
+
   label {
     display: block;
     margin-bottom: 8px;
@@ -48,8 +48,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 4px;
   }
-  
-  /* Submit button */
+ 
   button {
     background-color: #ff6347;
     color: white;
@@ -65,7 +64,7 @@ body {
     background-color: #e5533d;
   }
   
-  /* Link and paragraph styles */
+
   p {
     text-align: center;
     margin-top: 15px;

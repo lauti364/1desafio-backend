@@ -1,4 +1,4 @@
-/* General styles */
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -6,8 +6,7 @@ body {
     margin: 0;
     padding: 0;
   }
-  
-  /* Profile container */
+
   .profile-container {
     max-width: 600px;
     margin: 20px auto;
@@ -17,15 +16,13 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
-  
-  /* Header style */
+
   h2 {
     text-align: center;
-    color: #ff6347; /* Red color for the title */
+    color: #ff6347; 
     margin-top: 0;
   }
-  
-  /* User info styles */
+
   p {
     font-size: 1em;
     margin: 10px 0;
@@ -34,8 +31,7 @@ body {
   p span {
     font-weight: bold;
   }
-  
-  /* Logout button */
+ 
   button {
     background-color: #ff6347;
     color: white;

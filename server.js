@@ -83,7 +83,7 @@ app.use('/api', productsRouter);
 
 // Ruta principals
 app.get('/', (req, res) => {
-    res.render('chat');
+    res.render('login');
 });
 // logger de urls para solicitudis http
 app.use((req, res, next) => {
