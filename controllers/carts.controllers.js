@@ -3,6 +3,53 @@ const Producto = require('../dao/models/products.model');
 const Cart = require('../dao/models/cart.model');
 const { createTicket,uniqueCode } = require('../servicios/ticket.service'); 
 const logger = require('../util/logger');
+const nodemailer = require('nodemailer')
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: 'lautivp16@gmail.com',
+        pass: 'nutw zcqi wneu yscg'         
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
+
+const sendTicketEmail = async (userEmail, ticket) => {
+    const mailOptions = {
+        from: 'lautivp16@gmail.com',
+        to: userEmail,
+        subject: 'Tu Ticket de Compra',
+        html: `
+            <h1>Gracias por tu compra!</h1>
+            <p>Detalles de tu compra:</p>
+            <ul>
+                <li><strong>Código:</strong> ${ticket.code}</li>
+                <li><strong>Fecha de Compra:</strong> ${ticket.purchase_datetime}</li>
+                <li><strong>Monto:</strong> ${ticket.amount}</li>
+            </ul>
+            <p>¡Gracias por comprar con nosotros!</p>
+        `
+    };
+      
+
+    
+    
+    
+    
+    
+        try {
+        await transporter.sendMail(mailOptions);
+        logger.info('Ticket enviado al usuario.');
+    } catch (error) {
+        logger.error('Error al enviar el ticket:', error);
+    }
+};
+
+
+
+
+
 const getAllCarts = async (req, res) => {
     try {
         const carritos = await Cart.find();
@@ -171,7 +218,7 @@ const purchaseCart = async (req, res) => {
         logger.info('Generando ticket de compra:', ticketData);
 
         const newTicket = await createTicket(ticketData);
-
+        await sendTicketEmail(req.session.user.email, newTicket);
         // retorna los que no se pueden comprar
         if (productsNotPurchased.length > 0) {
             logger.info('Algunos productos no pudieron comprarse:', productsNotPurchased);
