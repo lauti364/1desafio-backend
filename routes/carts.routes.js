@@ -8,7 +8,7 @@ const {
     populateCartProducts,
     addProductsToCart,
     purchaseCart,
-    getCartById
+    getCartById,removeProductFromCart
 } = require('../controllers/carts.controllers');
 const authorizeRole = require('../middleware/authorize');
 
@@ -211,5 +211,5 @@ router.post('/carts/:cid/purchase', authorizeRole(['usuario']), purchaseCart);
  *         description: Carrito no encontrado
  */
 router.get('/carts/:cid', getCartById);
-
+router.post('/carts/:cartId/delete/:productId', authorizeRole(['usuario']), removeProductFromCart);
 module.exports = router;

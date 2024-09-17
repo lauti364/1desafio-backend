@@ -2,6 +2,42 @@ const Cart = require('./models/cart.model');
 const Producto = require('./models/products.model');
 const logger = require('../util/logger.js');
 class CartDAO {
+  async removeProductFromCart(cartId, productId) {
+    try {
+      // Convertir productId a ObjectId
+      const productIdToRemove = mongoose.Types.ObjectId(productId);
+
+      // Buscar el carrito por ID
+      const cart = await Cart.findById(cartId).populate('products.product');
+
+      if (!cart) {
+        throw new Error(`Carrito no encontrado para ID ${cartId}`);
+      }
+
+      // Filtrar el producto del carrito
+      const updatedProducts = cart.products.filter(product => 
+        product.product._id.toString() !== productIdToRemove.toString()
+      );
+
+      // Verificar si el producto fue encontrado y eliminado
+      if (updatedProducts.length === cart.products.length) {
+        throw new Error('Producto no encontrado en el carrito');
+      }
+
+      // Actualizar el carrito con los productos restantes
+      cart.products = updatedProducts;
+      await cart.save();
+
+      return { status: 'success', message: 'Producto eliminado del carrito', payload: cart };
+    } catch (error) {
+      console.error('Error al eliminar producto del carrito:', error);
+      throw error;
+    }
+  }
+
+
+
+
   async addToCart(cartId, productId, quantity) {
     try {
       let cart = await Cart.findById(cartId);
@@ -109,6 +145,7 @@ async saveCart(cart) {
 async saveTicket(ticket) {
   return await ticket.save();
 }
+
 }
 
 

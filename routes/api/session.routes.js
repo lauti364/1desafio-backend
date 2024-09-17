@@ -2,15 +2,14 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const User = require('../../dao/models/usuarios.model');
-const { createHash, isValidPassword } = require('../../utils.js');
 const authorizeRole = require('../../middleware/authorize');
 const logger = require('../../util/logger.js');
-// Ruta de registro
+const bcrypt = require('bcryptjs');
+
 router.post('/register', async (req, res) => {
     const { first_name, last_name, email, age, password } = req.body;
     try {
-        const hashedPassword = await createHash(password);
-        const newUser = new User({ first_name, last_name, email, age, password: hashedPassword });
+        const newUser = new User({ first_name, last_name, email, age, password });
         await newUser.save();
         req.flash('success_msg', 'Registro exitoso, por favor inicia sesión');
         res.redirect('/login');
@@ -21,19 +20,30 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Ruta de login
+// ruta para el login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log('Received login request with email:', email);
+    console.log('Received password:', password);
+
     try {
         const user = await User.findOne({ email });
 
         if (!user) {
             return res.status(404).send('Usuario no encontrado');
         }
-        // para el enlinea
+
+        console.log('User found:', user);
+
+        const isMatch = await user.comparePassword(password);
+        console.log('Password match result:', isMatch);
+
+        if (!isMatch) {
+            return res.status(401).send('Contraseña incorrecta');
+        }
+
         await user.updateLastConnection();
 
-        // Obtener el carrito del usuario con sus productos
         const populatedUser = await User.findById(user._id).populate('cart.products.product');
 
         req.session.user = {
@@ -46,13 +56,15 @@ router.post('/login', async (req, res) => {
             cart: populatedUser.cart
         };
 
-        console.log(req.session.user);
+        console.log('Session user set:', req.session.user);
         res.redirect('/api/products');
     } catch (err) {
-        console.error(err);
+        console.error('Error al iniciar sesión:', err);
         res.status(500).send('Error al iniciar sesión');
     }
 });
+
+
 
 // logout y actualiza conexion
 router.post('/logout', async (req, res) => { 
@@ -71,14 +83,12 @@ router.post('/logout', async (req, res) => {
     }
 });
 
-
-// Rutas de GitHub
+// rutas de GitHub
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 
 router.get('/githubcallback', 
     passport.authenticate('github', { failureRedirect: '/' }),
     (req, res) => {
-        // Autenticación exitosa
         req.session.user = {
             id: req.user._id,
             first_name: req.user.first_name,
@@ -92,5 +102,4 @@ router.get('/githubcallback',
     }
 );
 
-
-module.exports = router; 
+module.exports = router;

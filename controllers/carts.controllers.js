@@ -260,11 +260,22 @@ const getCartById = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener el carrito', error: error.message || 'Unknown error' });
     }
 };
+const removeProductFromCart = async (req, res) => {
+    try {
+        const { cid, pid } = req.params;
+        const result = await CartDAO.removeProductFromCart(cid, pid);
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error al eliminar producto del carrito:', error);
+        res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
+    }
+};
 
 module.exports = {
     getAllCarts,
     createCart,
     deleteCart,
     updateCart,
-    populateCartProducts,addProductsToCart,purchaseCart,getCartById
+    populateCartProducts,addProductsToCart,purchaseCart,getCartById,removeProductFromCart
 };

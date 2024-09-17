@@ -6,7 +6,7 @@ const Producto = require('../dao/models/products.model');
 const { generateMockProducts } = require('../mocking');
 const { CustomError, ERROR_productos } = require('../util/errores');
 const multer = require('multer');
-// multer para subir foto de los products
+// multer para subir foto de los productos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/products/');
