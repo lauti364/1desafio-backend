@@ -219,11 +219,16 @@ const purchaseCart = async (req, res) => {
 
         const newTicket = await createTicket(ticketData);
         await sendTicketEmail(req.session.user.email, newTicket);
+
+        cart.products = [];
+        await cart.save();
+
         // retorna los que no se pueden comprar
         if (productsNotPurchased.length > 0) {
             logger.info('Algunos productos no pudieron comprarse:', productsNotPurchased);
             return res.status(400).json({ notPurchasedProducts: productsNotPurchased });
         }
+
 
         // finaliza la compra
         logger.info('Compra realizada correctamente');

@@ -12,13 +12,14 @@ const initializePassport = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             let user = await userService.findOne({ email: profile._json.email });
+
             if (!user) {
                 let newUser = {
-                    first_name: profile._json.name,
-                    last_name: "",
-                    age: 20,
+                    first_name: profile._json.name || profile.username, 
+                    last_name: "GitHub User", 
+                    age: 20,  
                     email: profile._json.email,
-                    password: ""
+                    password: createHash('GitHubNoPassword'),
                 };
                 let result = await userService.create(newUser);
                 done(null, result);
@@ -29,6 +30,7 @@ const initializePassport = () => {
             return done(error);
         }
     }));
+
 
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {

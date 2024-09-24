@@ -92,10 +92,9 @@ router.get('/githubcallback',
         req.session.user = {
             id: req.user._id,
             first_name: req.user.first_name,
-            last_name: req.user.last_name,
             email: req.user.email,
             age: req.user.age,
-            rol: req.user.role,
+            rol: req.user.role || 'usuario',  
             cart: req.user.cart
         };
         res.redirect('/api/products');

@@ -27,7 +27,7 @@ userSchema.pre('save', async function(next) {
 
     //mails de admin
 
-    const adminEmails = ['admin@gmail.com', 'admin2@gmail.com']; 
+    const adminEmails = ['admin@gmail.com', 'ki@gmail.com']; 
     if (adminEmails.includes(this.email)) {
         this.role = 'admin';
     }
